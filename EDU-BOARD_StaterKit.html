@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>EDU-BOARD | Fool-Proof Starter Kit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { navy: { DEFAULT: '#0B1F3A', 700: '#12305A', 500: '#1D4780' }, safe: { DEFAULT: '#16C47F', dark: '#0E9A62', soft: '#E7F9F0' } }, fontFamily: { sans: ['Inter', 'system-ui', 'Segoe UI', 'Arial', 'sans-serif'] } } } }</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+  <style>
+    :root {
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      color-scheme: light
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px)
+    }
+
+    body {
+      background: #F5F8FB;
+      color: #0B1F3A;
+      font-family: Inter, system-ui, 'Segoe UI', Arial, sans-serif
+    }
+
+    .flow {
+      background: linear-gradient(90deg, #16C47F 0 50%, #0E9A62 50% 100%);
+      background-size: 24px 100%;
+      animation: flow .6s linear infinite
+    }
+
+    .flowr {
+      background: linear-gradient(90deg, #EF4444 0 50%, #B91C1C 50% 100%);
+      background-size: 24px 100%;
+      animation: flow .6s linear infinite
+    }
+
+    @keyframes flow {
+      to {
+        background-position: 24px 0
+      }
+    }
+
+    .grid-bg {
+      background-image: linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+      background-size: 32px 32px
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script>
+    const { useState, useEffect, useRef } = React;
+    const html = htm.bind(React.createElement);
+
+    /* GAMBAR PRODUK: isi dengan URL atau data-URI milik Anda. Kosong = tampil placeholder. */
+    const IMAGES = { hero: '', flatlay: '', modul: '', jst: '', guidebook: '', qr: '' };
+    const Slot = ({ k, label, hint }) => IMAGES[k]
+      ? html`<img src=${IMAGES[k]} alt=${label} className="w-full h-full object-cover rounded-2xl"/>`
+      : html`<div className="w-full h-full rounded-2xl border-2 border-dashed border-safe/50 bg-gradient-to-br from-safe-soft to-white flex flex-col items-center justify-center text-center p-4"><div className="w-12 h-12 rounded-xl bg-safe/20 text-safe-dark flex items-center justify-center"><${Icon} n="image" size=${24}/></div><div className="mt-3 font-semibold text-navy text-sm">${label}</div><div className="text-xs text-slate-500 mt-1">${hint}</div></div>`;
+
+    /* Ikon: path Lucide (inline, tanpa dependensi). Di proyek sungguhan: import {Plug,ShieldCheck,BookOpen} from 'lucide-react' */
+    const P = {
+      plug: ["M12 22v-5", "M9 8V2", "M15 8V2", "M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"],
+      shield: ["M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z", "m9 12 2 2 4-4"],
+      book: ["M12 7v14", "M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"],
+      check: ["M20 6 9 17l-5-5"],
+      zap: ["M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"],
+      warn: ["m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3", "M12 9v4", "M12 17h.01"],
+      image: ["M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z", "M9 7a2 2 0 1 0 0 4 2 2 0 0 0 0-4z", "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"],
+      scan: ["M3 7V5a2 2 0 0 1 2-2h2", "M17 3h2a2 2 0 0 1 2 2v2", "M21 17v2a2 2 0 0 1-2 2h-2", "M7 21H5a2 2 0 0 1-2-2v-2", "M7 12h10"]
+    };
+    const Icon = ({ n, size = 24, className = '' }) => html`<svg width=${size} height=${size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=${className}>${P[n].map((d, i) => html`<path key=${i} d=${d}/>`)}</svg>`;
+
+    const Led = ({ on, color }) => html`<span className=${'inline-block w-6 h-6 rounded-full transition-all duration-300 ' + (on ? '' : 'bg-slate-600')} style=${on ? { background: color, boxShadow: '0 0 22px 6px ' + color } : {}}></span>`;
+
+    function Nav() {
+      return html`<header className="absolute top-0 inset-x-0 z-10"><div className="max-w-6xl mx-auto px-5 py-5 flex items-center justify-between">
+  <div className="flex items-center gap-2 text-white font-extrabold text-lg"><span className="w-8 h-8 rounded-lg bg-safe flex items-center justify-center text-navy"><${Icon} n="zap" size=${18}/></span>EDU-BOARD</div>
+  <nav className="hidden sm:flex gap-6 text-sm text-slate-300"><a href="#demo" className="hover:text-white">Demo</a><a href="#fitur" className="hover:text-white">Keunggulan</a><a href="#cara" className="hover:text-white">Cara Kerja</a><a href="#guidebook" className="hover:text-white">Guidebook</a><a href="#harga" className="hover:text-white">Harga</a></nav>
+ </div></header>`;
+    }
+
+    function Hero() {
+      return html`<section className="relative bg-navy grid-bg text-white overflow-hidden">
+  <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-safe/20 blur-3xl"></div>
+  <${Nav}/>
+  <div className="relative max-w-6xl mx-auto px-5 pt-32 pb-24 grid md:grid-cols-2 gap-12 items-center">
+   <div>
+    <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide bg-white/10 border border-white/15 rounded-full px-3 py-1 text-safe"><span className="w-2 h-2 rounded-full bg-safe animate-pulse"></span>PRE-ORDER DIBUKA</span>
+    <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold leading-tight">EDU-BOARD: <span className="text-safe">Fool-Proof</span> Starter Kit.</h1>
+    <p className="mt-4 text-xl sm:text-2xl font-semibold text-slate-200">Belajar Elektronika Tanpa Takut Komponen Terbakar.</p>
+    <p className="mt-4 text-slate-400 max-w-md">Satu kabel salah tidak lagi berarti power supply hangus. Rakit, coba, dan belajar dengan aman.</p>
+    <div className="mt-8 flex flex-wrap gap-3">
+     <a href="#harga" className="bg-safe hover:bg-safe-dark text-navy font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-safe/30 transition">Pre-Order Sekarang Rp 149.000</a>
+     <a href="#demo" className="border border-white/25 hover:bg-white/10 px-6 py-3.5 rounded-xl font-semibold transition">Coba Demo</a>
+    </div>
+   </div>
+   <div className="relative">
+    ${IMAGES.hero ? html`<img src=${IMAGES.hero} alt="EDU-BOARD" className="rounded-3xl w-full shadow-2xl"/>` : null}<div className=${(IMAGES.hero ? 'hidden ' : '') + 'rounded-3xl bg-navy-700 border border-white/10 p-6 shadow-2xl'}>
+     <div className="flex justify-between items-center mb-5"><span className="text-xs text-slate-400 font-mono">EDU-BOARD v1</span><div className="flex gap-2"><${Led} on=${true} color="#16C47F"/><${Led} on=${false}/></div></div>
+     <div className="grid grid-cols-6 gap-2">${Array.from({ length: 24 }).map((_, i) => html`<div key=${i} className=${'h-8 rounded ' + (i % 7 === 0 ? 'bg-safe/70' : 'bg-white/10')}></div>`)}</div>
+     <div className="mt-5 flex gap-3"><div className="flex-1 h-10 rounded-lg bg-navy-500 flex items-center justify-center text-xs font-semibold">PRE-FLIGHT CHECK</div><div className="w-24 h-10 rounded-lg bg-white/10 border border-dashed border-white/30 flex items-center justify-center text-[10px] text-slate-400">JST ▸ asimetris</div></div>
+    </div>
+   </div>
+  </div>
+ </section>`;
+    }
+
+    function Demo() {
+      const [scenario, setScenario] = useState('ok');
+      const [phase, setPhase] = useState('idle');
+      const t = useRef();
+      useEffect(() => () => clearTimeout(t.current), []);
+      const run = () => { if (phase === 'scanning') return; setPhase('scanning'); t.current = setTimeout(() => setPhase(scenario === 'ok' ? 'ok' : 'short'), 1800); };
+      const pick = s => { clearTimeout(t.current); setScenario(s); setPhase('idle'); };
+      const l1 = { idle: 'bg-slate-600', scanning: 'bg-amber-400 animate-pulse', ok: 'flow', short: 'flowr' }[phase];
+      const l2 = { idle: 'bg-slate-600', scanning: 'bg-slate-600', ok: 'flow', short: 'bg-slate-600 opacity-40' }[phase];
+      const msg = {
+        idle: { c: 'text-slate-300', t: 'Siap. Pilih skenario, lalu tekan tombol pemeriksaan.' },
+        scanning: { c: 'text-amber-300', t: 'Mendeteksi Rangkaian...' },
+        ok: { c: 'text-safe', t: 'Lampu Hijau: Wiring Aman, Daya Dialirkan' },
+        short: { c: 'text-red-400', t: 'Lampu Merah: Korsleting Dicegah!' }
+      }[phase];
+      const btn = (s, label) => html`<button onClick=${() => pick(s)} className=${'px-4 py-2 rounded-lg text-sm font-semibold transition ' + (scenario === s ? 'bg-white text-navy' : 'bg-white/10 text-slate-300 hover:bg-white/20')}>${label}</button>`;
+      return html`<section id="demo" className="bg-navy py-20 px-5">
+  <div className="max-w-3xl mx-auto text-center">
+   <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Rasakan Sendiri: <span className="text-safe">Self-Diagnose</span></h2>
+   <p className="mt-3 text-slate-400">Simulasikan dua kondisi rangkaian, lalu lihat bagaimana EDU-BOARD melindungi komponen Anda.</p>
+   <div className="mt-8 rounded-3xl bg-navy-700 border border-white/10 p-5 sm:p-8 shadow-2xl text-left">
+    <div className="flex flex-wrap gap-2 justify-center mb-6"><span className="text-xs text-slate-400 self-center mr-1">Skenario:</span>${btn('ok', 'Wiring Benar')}${btn('short', 'Kabel Korsleting')}</div>
+    <div className="flex items-center gap-2 sm:gap-3">
+     <div className="w-16 sm:w-24 shrink-0 rounded-xl bg-navy-500 py-4 text-center text-[11px] sm:text-xs font-semibold text-white">Sumber<br/>Daya</div>
+     <div className=${'flex-1 h-2 rounded-full transition ' + l1}></div>
+     <div className="shrink-0 rounded-xl bg-navy border border-white/15 px-3 sm:px-5 py-4 text-center">
+      <div className="text-[10px] sm:text-xs text-slate-400 mb-2">Modul Self-Diagnose</div>
+      <div className="flex gap-3 justify-center"><${Led} on=${phase === 'ok'} color="#16C47F"/><${Led} on=${phase === 'short'} color="#EF4444"/></div>
+     </div>
+     <div className=${'flex-1 h-2 rounded-full transition ' + l2}></div>
+     <div className=${'w-16 sm:w-24 shrink-0 rounded-xl py-4 text-center text-[11px] sm:text-xs font-semibold transition ' + (phase === 'short' ? 'bg-red-500/20 text-red-300 border border-red-400/40' : 'bg-navy-500 text-white')}>${phase === 'short' ? html`<${Icon} n="warn" size=${18} className="mx-auto mb-1"/>` : null}Rangkaian<br/>Anda</div>
+    </div>
+    <div className="mt-8 min-h-[88px] rounded-2xl bg-black/25 border border-white/10 p-4 flex items-center gap-3">
+     ${phase === 'scanning' ? html`<span className="w-5 h-5 rounded-full border-2 border-amber-300 border-t-transparent animate-spin shrink-0"></span>` : null}
+     ${phase === 'ok' ? html`<span className="text-safe shrink-0"><${Icon} n="check" size=${24}/></span>` : null}
+     ${phase === 'short' ? html`<span className="text-red-400 shrink-0"><${Icon} n="warn" size=${24}/></span>` : null}
+     <div><div className=${'font-bold text-lg ' + msg.c}>${msg.t}</div>
+     ${phase === 'short' ? html`<div className="text-sm text-slate-400 mt-1">Arus diblokir PTC Resettable Fuse. Power supply dan komponen selamat.</div>` : null}
+     ${phase === 'ok' ? html`<div className="text-sm text-slate-400 mt-1">Aman untuk dinyalakan. Selamat bereksperimen!</div>` : null}</div>
+    </div>
+    <div className="mt-6 flex flex-wrap gap-3 justify-center">
+     <button onClick=${run} disabled=${phase === 'scanning'} className="bg-safe hover:bg-safe-dark disabled:opacity-60 text-navy font-bold px-7 py-3 rounded-xl shadow-lg shadow-safe/20 transition">Tekan Pre-Flight Check</button>
+     ${phase === 'ok' || phase === 'short' ? html`<button onClick=${() => setPhase('idle')} className="border border-white/25 text-white px-5 py-3 rounded-xl font-semibold hover:bg-white/10">Reset</button>` : null}
+    </div>
+   </div>
+  </div>
+ </section>`;
+    }
+
+    function Features() {
+      const items = [
+        { n: 'plug', t: 'Konektor Anti-Salah Sambung', d: 'Soket JST asimetris yang secara fisik tidak bisa dicolok terbalik. Anti-reverse polarity sejak colokan pertama.' },
+        { n: 'shield', t: 'Modul Self-Diagnose', d: 'Pelindung berbasis PTC Resettable Fuse dengan tombol Pre-Flight Check. LED hijau berarti aman, LED merah berarti arus diblokir.' },
+        { n: 'book', t: 'Hybrid Guidebook', d: 'Kiri: skematik dasar. Kanan: visual 3D perakitan dan QR code tutorial. Teori dan praktik dalam satu pandangan.' }
+      ];
+      return html`<section id="fitur" className="py-20 px-5 bg-[#F5F8FB]">
+  <div className="max-w-6xl mx-auto">
+   <div className="text-center max-w-2xl mx-auto"><h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Tiga Lapis Perlindungan</h2><p className="mt-3 text-slate-600">Dirancang untuk pemula yang sayang uang, bukan takut belajar.</p></div>
+   <div className="mt-12 grid md:grid-cols-3 gap-6">
+    ${items.map(x => html`<div key=${x.n} className="group bg-white rounded-2xl p-7 border border-slate-200 hover:border-safe hover:shadow-xl hover:-translate-y-1 transition">
+     <div className="w-14 h-14 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center group-hover:bg-safe group-hover:text-navy transition"><${Icon} n=${x.n} size=${28}/></div>
+     <h3 className="mt-5 text-xl font-bold text-navy">${x.t}</h3>
+     <p className="mt-2 text-slate-600 leading-relaxed">${x.d}</p>
+    </div>`)}
+   </div>
+  </div>
+ </section>`;
+    }
+
+    function Pricing() {
+      const [open, setOpen] = useState(false);
+      const [f, setF] = useState({ nama: '', wa: '', qty: 1 });
+      const [done, setDone] = useState(false);
+      const [err, setErr] = useState(false);
+      const items = ['Modul Self-Diagnose (PTC Fuse + Pre-Flight Check)', 'Konektor & kabel JST asimetris', 'Breadboard + papan dasar EDU-BOARD', 'Komponen inti (LED, resistor, kapasitor, tombol)', 'Hybrid Guidebook + QR tutorial'];
+      const submit = () => { if (!f.nama.trim() || !f.wa.trim()) { setErr(true); return; } setErr(false); setDone(true); };
+      const inp = 'w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:border-safe focus:ring-2 focus:ring-safe/30 bg-white text-navy';
+      return html`<section id="harga" className="py-20 px-5 bg-[#F5F8FB]">
+  <div className="max-w-4xl mx-auto text-center">
+   <h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Harga yang Berpihak pada Pemula</h2>
+   <p className="mt-3 text-slate-600">Mulai eksplorasi tanpa membebani dompet, dan tanpa membuat orang tua ragu.</p>
+   <div className="mt-10 mx-auto max-w-md rounded-3xl border-2 border-safe bg-white shadow-2xl shadow-safe/20 overflow-hidden text-left">
+    <div className="bg-navy text-white px-7 py-5 flex items-center justify-between"><span className="font-bold text-lg">Basic Starter Pack</span><span className="text-xs font-bold bg-safe text-navy rounded-full px-3 py-1">Hemat ±70%</span></div>
+    <div className="p-7">
+     <div className="text-sm text-slate-500">Kit Elektronika Konvensional</div>
+     <div className="text-xl font-semibold text-slate-400 line-through decoration-red-500 decoration-2">Rp 500.000+</div>
+     <div className="mt-1 flex items-end gap-2"><span className="text-5xl font-extrabold text-navy">Rp 149.000</span></div>
+     <ul className="mt-6 space-y-3">${items.map(i => html`<li key=${i} className="flex gap-3 text-slate-700 text-sm"><span className="mt-0.5 w-5 h-5 shrink-0 rounded-full bg-safe-soft text-safe-dark flex items-center justify-center"><${Icon} n="check" size=${13}/></span>${i}</li>`)}</ul>
+     ${!open ? html`<button onClick=${() => setOpen(true)} className="mt-8 w-full bg-safe hover:bg-safe-dark text-navy font-bold py-3.5 rounded-xl shadow-lg shadow-safe/30 transition">Pre-Order Sekarang</button>` : null}
+     ${open && !done ? html`<div className="mt-8 space-y-3">
+      <input className=${inp} placeholder="Nama lengkap" value=${f.nama} onChange=${e => setF({ ...f, nama: e.target.value })}/>
+      <input className=${inp} placeholder="Nomor WhatsApp" value=${f.wa} onChange=${e => setF({ ...f, wa: e.target.value })}/>
+      <input className=${inp} type="number" min="1" placeholder="Jumlah" value=${f.qty} onChange=${e => setF({ ...f, qty: e.target.value })}/>
+      ${err ? html`<div className="text-sm text-red-600">Nama dan nomor WhatsApp wajib diisi.</div>` : null}
+      <button onClick=${submit} className="w-full bg-navy hover:bg-navy-700 text-white font-bold py-3.5 rounded-xl transition">Kirim Pre-Order · Rp ${(149000 * (Number(f.qty) || 1)).toLocaleString('id-ID')}</button>
+     </div>`: null}
+     ${done ? html`<div className="mt-8 rounded-xl bg-safe-soft border border-safe p-4 text-center"><div className="font-bold text-safe-dark">Terima kasih, ${f.nama}!</div><div className="text-sm text-slate-600 mt-1">Pre-order tercatat (simulasi mockup). Tim kami akan menghubungi via WhatsApp.</div></div>` : null}
+    </div>
+   </div>
+  </div>
+ </section>`;
+    }
+
+    function Gallery() {
+      const g = [['flatlay', 'Foto Produk Utuh', 'Flat lay seluruh isi paket'], ['modul', 'Modul Self-Diagnose', 'Close-up LED & tombol'], ['jst', 'Konektor JST Asimetris', 'Close-up soket & kabel'], ['guidebook', 'Hybrid Guidebook', 'Halaman skematik + QR']];
+      return html`<section id="produk" className="py-20 px-5 bg-white"><div className="max-w-6xl mx-auto">
+  <div className="text-center max-w-2xl mx-auto"><h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Lihat Isi Kitnya</h2><p className="mt-3 text-slate-600">Setiap bagian dirancang untuk satu tujuan: membuat belajar terasa aman.</p></div>
+  <div className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">${g.map(([k, l, h]) => html`<div key=${k} className="aspect-[4/5]"><${Slot} k=${k} label=${l} hint=${h}/></div>`)}</div>
+ </div></section>`;
+    }
+
+    function How() {
+      const s = [{ n: 'book', t: 'Rakit Sesuai Guidebook', d: 'Ikuti skematik di kiri dan visual 3D di kanan. Tidak perlu menebak.' }, { n: 'plug', t: 'Sambungkan Konektor JST', d: 'Bentuk asimetris hanya mengizinkan satu arah. Salah colok jadi mustahil.' }, { n: 'shield', t: 'Tekan Pre-Flight Check', d: 'Modul memeriksa rangkaian sebelum daya dialirkan ke komponen.' }, { n: 'zap', t: 'Nyalakan & Belajar', d: 'LED hijau: daya mengalir. LED merah: arus diblokir, perbaiki lalu ulangi.' }];
+      return html`<section id="cara" className="py-20 px-5 bg-[#F5F8FB]"><div className="max-w-6xl mx-auto">
+  <div className="text-center max-w-2xl mx-auto"><h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Cara Kerja: 4 Langkah Aman</h2><p className="mt-3 text-slate-600">Dari kotak sampai LED menyala, tanpa rasa was-was.</p></div>
+  <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">${s.map((x, i) => html`<div key=${i} className="relative bg-white rounded-2xl p-6 pt-8 border border-slate-200 hover:border-safe hover:shadow-lg transition">
+   <span className="absolute -top-4 left-6 w-9 h-9 rounded-full bg-navy text-white font-bold flex items-center justify-center ring-4 ring-[#F5F8FB]">${i + 1}</span>
+   <div className="w-12 h-12 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center"><${Icon} n=${x.n} size=${24}/></div>
+   <h3 className="mt-4 text-lg font-bold text-navy">${x.t}</h3><p className="mt-2 text-sm text-slate-600 leading-relaxed">${x.d}</p></div>`)}</div>
+ </div></section>`;
+    }
+
+    function Qr() {
+      if (IMAGES.qr) return html`<img src=${IMAGES.qr} alt="QR tutorial" className="w-24 h-24"/>`;
+      const c = [];
+      for (let i = 0; i < 11; i++)for (let j = 0; j < 11; j++) {
+        const fin = (i < 3 && j < 3) || (i < 3 && j > 7) || (i > 7 && j < 3);
+        const on = fin ? !((i === 1 && j === 1) || (i === 1 && j === 9) || (i === 9 && j === 1)) : ((i * 7 + j * 13 + i * j) % 3 === 0);
+        c.push(html`<div key=${i * 11 + j} className=${on ? 'bg-navy' : 'bg-white'}></div>`);
+      }
+      return html`<div className="grid grid-cols-[repeat(11,1fr)] grid-rows-[repeat(11,1fr)] w-24 h-24 p-1.5 bg-white border-2 border-navy rounded">${c}</div>`;
+    }
+
+    function Guidebook() {
+      const [scan, setScan] = useState(false);
+      const [playing, setPlaying] = useState(false);
+      const [p, setP] = useState(0);
+      useEffect(() => { if (!playing) return; const id = setInterval(() => setP(v => { if (v >= 100) { setPlaying(false); return 100; } return v + 2; }), 120); return () => clearInterval(id); }, [playing]);
+      const steps = ['Siapkan komponen', 'Pasang konektor JST', 'Hubungkan LED', 'Pre-Flight Check'];
+      const act = Math.min(3, Math.floor(p / 25));
+      const toggle = () => { if (p >= 100) setP(0); setPlaying(!playing); };
+      return html`<section id="guidebook" className="py-20 px-5 bg-white"><div className="max-w-5xl mx-auto">
+  <div className="text-center max-w-2xl mx-auto"><h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Contoh Hybrid Guidebook</h2><p className="mt-3 text-slate-600">Kiri untuk memahami, kanan untuk merakit. Satu QR membawa Anda ke video tutorial.</p></div>
+  <div className="mt-12 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden grid md:grid-cols-2 bg-[#FFFDF7] text-navy">
+   <div className="p-6 sm:p-8 md:border-r md:border-slate-300" style=${{ boxShadow: 'inset -14px 0 18px -16px rgba(0,0,0,.3)' }}>
+    <div className="flex justify-between text-xs font-semibold text-slate-500"><span>PROYEK 1 · LED PERTAMAMU</span><span>Hal. 12</span></div>
+    <h3 className="mt-3 text-xl font-bold">Skematik Dasar</h3>
+    <svg viewBox="0 0 220 130" className="mt-3 w-full" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+     <path d="M30 20H70M110 20H190V45M190 70V110H30V60M30 20V50"/><rect x="70" y="12" width="40" height="16" rx="2"/>
+     <path d="M178 45H202L190 70Z M178 70H202 M20 50H40 M25 60H35"/>
+     <text x="34" y="14" fontSize="10" fill="currentColor" stroke="none">+5V</text><text x="72" y="44" fontSize="10" fill="currentColor" stroke="none">R 220Ω</text><text x="204" y="62" fontSize="10" fill="currentColor" stroke="none">LED</text><text x="40" y="126" fontSize="10" fill="currentColor" stroke="none">GND</text>
+    </svg>
+    <p className="mt-2 text-sm text-slate-600">Arus mengalir dari +5V melewati resistor, menyalakan LED, lalu kembali ke GND.</p>
+   </div>
+   <div className="p-6 sm:p-8 border-t md:border-t-0 border-slate-300">
+    <div className="flex justify-between text-xs font-semibold text-slate-500"><span>PERAKITAN</span><span>Hal. 13</span></div>
+    <h3 className="mt-3 text-xl font-bold">Visual Perakitan 3D</h3>
+    <div className="h-40 flex items-center justify-center" style=${{ perspective: '700px' }}>
+     <div className="relative w-40 h-28 rounded-lg bg-navy shadow-xl" style=${{ transform: 'rotateX(55deg) rotateZ(-32deg)' }}>
+      <div className="absolute left-3 top-3 w-10 h-6 rounded bg-navy-500 border border-white/30"></div><div className="absolute left-16 top-3 w-12 h-8 rounded bg-safe/80"></div>
+      <div className="absolute left-4 bottom-5 w-14 h-3 rounded bg-amber-300"></div><div className="absolute right-4 bottom-4 w-5 h-5 rounded-full bg-safe shadow-lg"></div>
+     </div>
+    </div>
+    <p className="text-xs text-slate-500 text-center">① Konektor JST · ② Modul · ③ Resistor · ④ LED</p>
+    <div className="mt-5 flex items-center gap-4 rounded-2xl bg-white border border-slate-200 p-4">
+     <${Qr}/>
+     <div><div className="font-bold text-sm">Pindai untuk video tutorial</div><div className="text-xs text-slate-500 mt-1">Proyek 1: LED Pertamamu</div>
+      <button onClick=${() => setScan(true)} className="mt-3 inline-flex items-center gap-2 bg-navy hover:bg-navy-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition"><${Icon} n="scan" size=${14}/>Pindai QR (simulasi)</button></div>
+    </div>
+   </div>
+  </div>
+  <div className="mt-10 flex justify-center">
+   ${!scan ? html`<p className="text-sm text-slate-500">Tekan “Pindai QR” untuk melihat tampilan tutorial di ponsel.</p>` : html`<div className="w-60 rounded-[2rem] border-8 border-navy bg-white shadow-2xl overflow-hidden text-navy">
+    <div className="bg-navy h-32 flex items-center justify-center"><button onClick=${toggle} className="w-14 h-14 rounded-full bg-white/10 border border-safe flex items-center justify-center gap-1.5">${playing ? html`<span className="w-1.5 h-5 bg-safe rounded-sm"></span><span className="w-1.5 h-5 bg-safe rounded-sm"></span>` : html`<span style=${{ borderLeft: '16px solid #16C47F', borderTop: '10px solid transparent', borderBottom: '10px solid transparent', marginLeft: '4px' }}></span>`}</button></div>
+    <div className="h-1.5 bg-slate-200"><div className="h-full bg-safe transition-all" style=${{ width: p + '%' }}></div></div>
+    <div className="p-4"><div className="font-bold text-sm">LED Pertamamu</div><ul className="mt-3 space-y-2">${steps.map((t, i) => html`<li key=${i} className=${'flex items-center gap-2 text-xs ' + (i <= act && p > 0 ? 'text-navy font-semibold' : 'text-slate-400')}><span className=${'w-4 h-4 rounded-full text-[9px] flex items-center justify-center ' + (i <= act && p > 0 ? 'bg-safe text-navy' : 'bg-slate-200')}>${i + 1}</span>${t}</li>`)}</ul></div>
+   </div>`}
+  </div>
+ </div></section>`;
+    }
+
+    function App() {
+      return html`<main><${Hero}/><${Demo}/><${Features}/><${Gallery}/><${How}/><${Guidebook}/><${Pricing}/>
+  <footer className="bg-navy text-slate-400 text-sm text-center py-8 px-5">EDU-BOARD · Prototipe web landing page · Tim 9 Technopreneurship.</footer></main>`;
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+  </script>
+</body>
+
+</html>
