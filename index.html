@@ -66,6 +66,162 @@
     #st.ok b { color: var(--safe) !important; }
     #st.short { border-left-color: var(--red) !important; }
     #st.short b { color: var(--red) !important; }
+
+    /* EDU-BOARD 3D Packaging Box Styles */
+    :root {
+      --box-w: 300px;
+      --box-d: 68px;
+      --box-h: 224px;
+    }
+
+    @keyframes introScaleUp {
+      0% {
+        opacity: 0;
+        transform: translateY(70px) scale(0.65);
+      }
+      60% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.03);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .hero-3d-wrap {
+      animation: introScaleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      perspective: 1400px;
+    }
+
+    .box-stage {
+      width: 100%;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      touch-action: none;
+      position: relative;
+      user-select: none;
+      perspective: 1400px;
+    }
+    .box-stage:active { cursor: grabbing; }
+
+    .box-world {
+      transform: scale(var(--s, 1));
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .box-cube {
+      position: relative;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .box-cube.anim { transition: transform .8s cubic-bezier(.3,.7,.2,1); }
+
+    .box-shadow {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      width: 320px;
+      height: 44px;
+      margin-left: -160px;
+      background: radial-gradient(closest-side, rgba(0,0,0,0.55), rgba(22, 196, 127, 0.15), transparent);
+      filter: blur(8px);
+      pointer-events: none;
+      transform: scale(var(--s, 1));
+    }
+
+    .box-f {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      overflow: hidden;
+      background: #f6f7f8;
+      color: #1c2b39;
+      backface-visibility: hidden;
+      font-family: Inter, system-ui, Arial, sans-serif;
+      box-shadow: inset 0 0 1px rgba(0,0,0,0.25);
+    }
+
+    .box-f.fr, .box-f.bk {
+      width: var(--box-w);
+      height: var(--box-h);
+      margin: calc(var(--box-h)/-2) 0 0 calc(var(--box-w)/-2);
+    }
+    .box-f.fr { transform: translateZ(calc(var(--box-d)/2)); }
+    .box-f.bk { transform: rotateY(180deg) translateZ(calc(var(--box-d)/2)); }
+
+    .box-f.rt, .box-f.lf {
+      width: var(--box-d);
+      height: var(--box-h);
+      margin: calc(var(--box-h)/-2) 0 0 calc(var(--box-d)/-2);
+    }
+    .box-f.rt { transform: rotateY(90deg) translateZ(calc(var(--box-w)/2)); background: #eef0f2; }
+    .box-f.lf { transform: rotateY(-90deg) translateZ(calc(var(--box-w)/2)); background: #e9ecef; }
+
+    .box-f.tp, .box-f.bt {
+      width: var(--box-w);
+      height: var(--box-d);
+      margin: calc(var(--box-d)/-2) 0 0 calc(var(--box-w)/-2);
+    }
+    .box-f.tp { transform: rotateX(90deg) translateZ(calc(var(--box-h)/2)); background: #fafbfb; }
+    .box-f.bt { transform: rotateX(-90deg) translateZ(calc(var(--box-h)/2)); background: #d9dde1; }
+
+    .box-f img.bs { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+
+    .box-side {
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      height: 100%;
+      align-items: center;
+      text-align: center;
+      background: #eef0f2;
+    }
+    .box-side div { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .box-side svg { width: 22px; height: 22px; stroke: #1c2b39; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .box-side b { font-size: 6px; line-height: 1.15; letter-spacing: .1px; font-weight: 800; color: #1c2b39; }
+    .box-side em { font-size: 5.5px; font-style: normal; color: #4a5865; }
+
+    .box-vert { display: flex; align-items: center; justify-content: center; height: 100%; }
+    .box-vert h3 { margin: 0; writing-mode: vertical-rl; transform: rotate(180deg); font: 900 18px "Arial Black", Arial, sans-serif; letter-spacing: 1px; white-space: nowrap; color: #1c2b39; }
+
+    .box-top-in { display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%; }
+    .box-top-in h2 { margin: 0; font: 900 22px/1 "Arial Black", Arial, sans-serif; letter-spacing: -1px; color: #1c2b39; }
+    .box-top-in small { font-size: 6.5px; font-weight: 800; margin-top: 3px; color: #33414e; }
+
+    .box-bt-in { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 8px; font-weight: 700; color: #4a5865; gap: 8px; }
+
+    /* Cahaya Atas & Bawah */
+    .glow-light-top {
+      position: absolute;
+      top: -24px;
+      left: 10%;
+      right: 10%;
+      height: 90px;
+      background: radial-gradient(ellipse at center, rgba(22, 196, 127, 0.45) 0%, rgba(29, 71, 128, 0.2) 50%, transparent 75%);
+      filter: blur(20px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .glow-light-bottom {
+      position: absolute;
+      bottom: -15px;
+      left: 5%;
+      right: 5%;
+      height: 110px;
+      background: radial-gradient(ellipse at center, rgba(22, 196, 127, 0.5) 0%, rgba(14, 154, 98, 0.25) 45%, transparent 70%);
+      filter: blur(24px);
+      pointer-events: none;
+      z-index: 1;
+    }
   </style>
 </head>
 
@@ -75,8 +231,17 @@
     const { useState, useEffect, useRef } = React;
     const html = htm.bind(React.createElement);
 
-    /* GAMBAR PRODUK: isi dengan URL atau data-URI milik Anda. Kosong = tampil placeholder. */
-    const IMAGES = { hero: '', flatlay: '', modul: '', jst: '', guidebook: '', qr: '' };
+    /* GAMBAR PRODUK & 3D BOX: isi dengan path atau URL file gambar Anda. */
+    const IMAGES = {
+      hero: '',
+      boxFront: 'src/depan.png', // Mengarah ke file di folder src/
+      boxBack: 'src/depan.png',  // Mengarah ke file di folder src/
+      flatlay: '',
+      modul: '',
+      jst: '',
+      guidebook: '',
+      qr: ''
+    };
     const Slot = ({ k, label, hint }) => IMAGES[k]
       ? html`<img src=${IMAGES[k]} alt=${label} className="w-full h-full object-cover rounded-2xl"/>`
       : html`<div className="w-full h-full rounded-2xl border-2 border-dashed border-safe/50 bg-gradient-to-br from-safe-soft to-white flex flex-col items-center justify-center text-center p-4"><div className="w-12 h-12 rounded-xl bg-safe/20 text-safe-dark flex items-center justify-center"><${Icon} n="image" size=${24}/></div><div className="mt-3 font-semibold text-navy text-sm">${label}</div><div className="text-xs text-slate-500 mt-1">${hint}</div></div>`;
@@ -111,6 +276,246 @@
  </div></header>`;
     }
 
+    /* Komponen Kemasan EDU-BOARD 3D dengan Efek Cahaya, Animasi Scale-Up, & Auto-Rotate */
+    function Hero3DBox({ onOpenModal }) {
+      const stageRef = useRef(null);
+      const boxRef = useRef(null);
+      const worldRef = useRef(null);
+      const [autoRotate, setAutoRotate] = useState(true);
+
+      useEffect(() => {
+        const stage = stageRef.current;
+        const box = boxRef.current;
+        const world = worldRef.current;
+        if (!stage || !box || !world) return;
+
+        let rx = -16, ry = -28, zoom = 1, drag = false, lx = 0, ly = 0, animTimer = null;
+        let isAuto = autoRotate;
+
+        function fit() {
+          const w = stage.clientWidth || 360;
+          const s = Math.min(1.15, (w - 20) / 340) * zoom;
+          world.style.setProperty('--s', s.toFixed(3));
+          const shadow = stage.querySelector('.box-shadow');
+          if (shadow) shadow.style.setProperty('--s', s.toFixed(3));
+        }
+
+        function apply() {
+          box.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+        }
+
+        const onDown = e => {
+          drag = true;
+          box.classList.remove('anim');
+          lx = e.clientX;
+          ly = e.clientY;
+          if (stage.setPointerCapture) stage.setPointerCapture(e.pointerId);
+        };
+
+        const onMove = e => {
+          if (!drag) return;
+          ry += (e.clientX - lx) * 0.55;
+          rx = Math.max(-90, Math.min(90, rx - (e.clientY - ly) * 0.55));
+          lx = e.clientX;
+          ly = e.clientY;
+          apply();
+        };
+
+        const onUp = () => { drag = false; };
+
+        stage.addEventListener('pointerdown', onDown);
+        stage.addEventListener('pointermove', onMove);
+        stage.addEventListener('pointerup', onUp);
+        stage.addEventListener('pointercancel', onUp);
+
+        let reqId;
+        function loop() {
+          if (isAuto && !drag) {
+            box.classList.remove('anim');
+            ry += 0.45;
+            apply();
+          }
+          reqId = requestAnimationFrame(loop);
+        }
+        loop();
+
+        window.addEventListener('resize', fit);
+        fit();
+        apply();
+
+        return () => {
+          cancelAnimationFrame(reqId);
+          window.removeEventListener('resize', fit);
+          stage.removeEventListener('pointerdown', onDown);
+          stage.removeEventListener('pointermove', onMove);
+          stage.removeEventListener('pointerup', onUp);
+          stage.removeEventListener('pointercancel', onUp);
+          clearTimeout(animTimer);
+        };
+      }, [autoRotate]);
+
+      const rotateToFace = (x, y) => {
+        const box = boxRef.current;
+        if (!box) return;
+        box.classList.add('anim');
+        box.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+        setTimeout(() => box.classList.remove('anim'), 900);
+      };
+
+      const sideContent = html`
+        <div className="box-side">
+          <div>
+            <${Icon} n="shield" size=${20} className="text-navy"/>
+            <b>SELF-DIAGNOSE</b>
+            <em>Aman dari Korslet</em>
+          </div>
+          <div>
+            <${Icon} n="plug" size=${20} className="text-navy"/>
+            <b>FOOL-PROOF</b>
+            <em>Anti Terbalik</em>
+          </div>
+          <div>
+            <${Icon} n="book" size=${20} className="text-navy"/>
+            <b>HYBRID GUIDEBOOK</b>
+            <em>Cepat & Mandiri</em>
+          </div>
+        </div>
+      `;
+
+      return html`
+        <div className="relative hero-3d-wrap rounded-3xl bg-navy-700/80 border border-white/15 p-4 sm:p-6 shadow-2xl backdrop-blur-md">
+          
+          <!-- Efek Cahaya / Glow atas -->
+          <div className="glow-light-top"></div>
+
+          <!-- Header info card -->
+          <div className="relative z-10 flex justify-between items-center mb-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-safe animate-ping"></span>
+              <span className="text-xs font-bold text-safe tracking-wide font-mono">EDU-BOARD 3D STARTER PACK</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick=${() => setAutoRotate(!autoRotate)} 
+                className=${'text-[11px] font-semibold px-2.5 py-1 rounded-full border transition ' + (autoRotate ? 'bg-safe/20 border-safe text-safe' : 'bg-white/10 border-white/20 text-slate-300')}
+                title="Toggle Putar Otomatis">
+                ${autoRotate ? 'Auto-Rotate ON' : 'Paused'}
+              </button>
+            </div>
+          </div>
+
+          <!-- Stage 3D Box -->
+          <div className="relative z-10 box-stage" ref=${stageRef}>
+            <div className="box-shadow"></div>
+            <div className="box-world" ref=${worldRef}>
+              <div className="box-cube" ref=${boxRef}>
+                <!-- Sisi Depan -->
+                <div className="box-f fr">
+                  ${IMAGES.boxFront ? html`
+                    <img src=${IMAGES.boxFront} alt="Kemasan Depan" className="bs w-full h-full object-cover"/>
+                  ` : html`
+                    <!-- Desain default (akan otomatis digantikan saat IMAGES.boxFront diisi) -->
+                    <div className="absolute top-2.5 right-3 font-extrabold text-[12px] text-navy tracking-tight flex items-center gap-1">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block"></span> UPI
+                    </div>
+                    <div className="absolute left-3.5 top-3.5 text-left w-44">
+                      <h2 className="m-0 text-navy font-black text-xl leading-tight">EDU-BOARD</h2>
+                      <small className="block text-[6.5px] font-bold text-slate-600 tracking-wider mt-0.5">PAKET PRAKTIKUM ELEKTRONIKA DASAR</small>
+                      <strong className="block text-[8.5px] font-bold text-slate-800 leading-snug mt-1.5">Belajar Elektronika Lebih Aman, Tanpa Takut Komponen Rusak!</strong>
+                      <span className="block text-[6.2px] text-slate-600 mt-1 leading-tight">Berbasis Plug-and-Play dengan Proteksi Self-Diagnose</span>
+                    </div>
+                    <div className="absolute left-0 bottom-2.5 bg-navy text-white font-extrabold text-[7.5px] px-3 py-1 rounded-r-md">
+                      BASIC STARTER PACK
+                    </div>
+                    <div className="absolute right-3 bottom-3 w-32 h-20 bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-300 rounded-lg p-2 shadow-inner flex flex-col justify-between">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[7px] font-bold text-slate-600">MODUL V1</span>
+                        <div className="flex gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-sm shadow-red-500"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-safe shadow-sm shadow-safe"></span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-5 gap-1 my-1">
+                        ${Array.from({ length: 10 }).map((_, i) => html`<div key=${i} className="h-1.5 rounded-sm bg-safe/60"></div>`)}
+                      </div>
+                      <div className="text-[6px] text-slate-500 font-mono text-center">JST FOOL-PROOF</div>
+                    </div>
+                  `}
+                </div>
+
+                <!-- Sisi Belakang -->
+                <div className=${'box-f bk ' + (IMAGES.boxBack ? '' : 'bg-slate-100 p-3 flex flex-col justify-between text-left')}>
+                  ${IMAGES.boxBack ? html`
+                    <img src=${IMAGES.boxBack} alt="Kemasan Belakang" className="bs w-full h-full object-cover"/>
+                  ` : html`
+                    <!-- Desain default (akan otomatis digantikan saat IMAGES.boxBack diisi) -->
+                    <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                      <span className="text-[9px] font-bold text-navy">SPESIFIKASI & FITUR</span>
+                      <span className="text-[7px] font-mono text-slate-500">REV 1.0</span>
+                    </div>
+                    <ul className="text-[6.8px] text-slate-700 space-y-1 list-disc pl-3">
+                      <li>Modul Proteksi PTC Resettable Fuse 500mA</li>
+                      <li>Tombol Pre-Flight Check dengan Dual LED</li>
+                      <li>Soket JST Anti-Reverse Polarity</li>
+                      <li>Hybrid Guidebook Cetak + QR Video</li>
+                    </ul>
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-300 text-[6.5px] text-slate-500">
+                      <span>Tim Technopreneurship UPI</span>
+                      <span className="font-bold text-navy">edu-board.id</span>
+                    </div>
+                  `}
+                </div>
+
+                <!-- Sisi Kanan -->
+                <div className="box-f rt">${sideContent}</div>
+
+                <!-- Sisi Kiri -->
+                <div className="box-f lf">
+                  <div className="box-vert">
+                    <h3>EDU-BOARD</h3>
+                  </div>
+                </div>
+
+                <!-- Sisi Atas -->
+                <div className="box-f tp">
+                  <div className="box-top-in">
+                    <h2>EDU-BOARD</h2>
+                    <small>PAKET PRAKTIKUM ELEKTRONIKA DASAR</small>
+                  </div>
+                </div>
+
+                <!-- Sisi Bawah -->
+                <div className="box-f bt">
+                  <div className="box-bt-in">
+                    <b>UPI</b>
+                    <span>BASIC STARTER PACK</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Efek Cahaya / Glow bawah -->
+          <div className="glow-light-bottom"></div>
+
+          <!-- Quick Navigation Sisi Box & Aksi -->
+          <div className="relative z-10 mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-1.5">
+              <button onClick=${() => rotateToFace(-8, 0)} className="text-[10px] bg-white/10 hover:bg-white/20 text-slate-200 px-2 py-1 rounded-md transition font-medium">Depan</button>
+              <button onClick=${() => rotateToFace(-8, 180)} className="text-[10px] bg-white/10 hover:bg-white/20 text-slate-200 px-2 py-1 rounded-md transition font-medium">Belakang</button>
+              <button onClick=${() => rotateToFace(-8, 90)} className="text-[10px] bg-white/10 hover:bg-white/20 text-slate-200 px-2 py-1 rounded-md transition font-medium">Kiri</button>
+              <button onClick=${() => rotateToFace(-8, -90)} className="text-[10px] bg-white/10 hover:bg-white/20 text-slate-200 px-2 py-1 rounded-md transition font-medium">Kanan</button>
+            </div>
+            
+            <button onClick=${onOpenModal} className="text-xs bg-safe hover:bg-safe-dark text-navy font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-lg shadow-safe/20">
+              <${Icon} n="zap" size=${14}/> Tes Pre-Flight
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
     function Hero({ onOpenModal }) {
       return html`<section className="relative bg-navy grid-bg text-white overflow-hidden">
   <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-safe/20 blur-3xl"></div>
@@ -130,16 +535,7 @@
     </div>
    </div>
    <div className="relative">
-    ${IMAGES.hero ? html`<img src=${IMAGES.hero} alt="EDU-BOARD" className="rounded-3xl w-full shadow-2xl"/>` : null}<div className=${(IMAGES.hero ? 'hidden ' : '') + 'rounded-3xl bg-navy-700 border border-white/10 p-6 shadow-2xl'}>
-     <div className="flex justify-between items-center mb-5"><span className="text-xs text-slate-400 font-mono">EDU-BOARD v1</span><div className="flex gap-2"><${Led} on=${true} color="#16C47F"/><${Led} on=${false}/></div></div>
-     <div className="grid grid-cols-6 gap-2">${Array.from({ length: 24 }).map((_, i) => html`<div key=${i} className=${'h-8 rounded ' + (i % 7 === 0 ? 'bg-safe/70' : 'bg-white/10')}></div>`)}</div>
-     <div className="mt-5 flex gap-3">
-       <button onClick=${onOpenModal} className="flex-1 h-10 rounded-lg bg-navy-500 hover:bg-safe hover:text-navy text-white transition flex items-center justify-center text-xs font-semibold gap-1.5">
-         <${Icon} n="cube" size=${14}/> PRE-FLIGHT CHECK 3D
-       </button>
-       <div className="w-24 h-10 rounded-lg bg-white/10 border border-dashed border-white/30 flex items-center justify-center text-[10px] text-slate-400">JST ▸ asimetris</div>
-     </div>
-    </div>
+    <${Hero3DBox} onOpenModal=${onOpenModal}/>
    </div>
   </div>
  </section>`;
