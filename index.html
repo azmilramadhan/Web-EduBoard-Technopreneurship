@@ -11,12 +11,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     :root {
       box-sizing: border-box;
       padding-top: env(safe-area-inset-top, 0px);
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      color-scheme: light
+      color-scheme: light;
+      --navy: #0B1F3A;
+      --safe: #16C47F;
+      --red: #EF4444;
+      --amber: #F2B84B;
     }
 
     html {
@@ -29,28 +35,37 @@
       font-family: Inter, system-ui, 'Segoe UI', Arial, sans-serif
     }
 
-    .flow {
-      background: linear-gradient(90deg, #16C47F 0 50%, #0E9A62 50% 100%);
-      background-size: 24px 100%;
-      animation: flow .6s linear infinite
-    }
-
-    .flowr {
-      background: linear-gradient(90deg, #EF4444 0 50%, #B91C1C 50% 100%);
-      background-size: 24px 100%;
-      animation: flow .6s linear infinite
-    }
-
-    @keyframes flow {
-      to {
-        background-position: 24px 0
-      }
-    }
-
     .grid-bg {
       background-image: linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
       background-size: 32px 32px
     }
+
+    /* 3D Simulation Overlay & UI styles */
+    .sim-lab {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 10;
+      pointer-events: none;
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(11, 31, 58, .88);
+      border: 1px solid rgba(255, 255, 255, .2);
+      padding: 3px 8px;
+      border-radius: 99px;
+      color: #fff;
+      will-change: transform;
+    }
+    .sim-lab.g { border-color: var(--safe); color: var(--safe); }
+    .sim-lab.r { border-color: var(--red); color: #FCA5A5; }
+
+    #st.scan { border-left-color: var(--amber) !important; }
+    #st.scan b { color: var(--amber) !important; }
+    #st.ok { border-left-color: var(--safe) !important; }
+    #st.ok b { color: var(--safe) !important; }
+    #st.short { border-left-color: var(--red) !important; }
+    #st.short b { color: var(--red) !important; }
   </style>
 </head>
 
@@ -66,7 +81,7 @@
       ? html`<img src=${IMAGES[k]} alt=${label} className="w-full h-full object-cover rounded-2xl"/>`
       : html`<div className="w-full h-full rounded-2xl border-2 border-dashed border-safe/50 bg-gradient-to-br from-safe-soft to-white flex flex-col items-center justify-center text-center p-4"><div className="w-12 h-12 rounded-xl bg-safe/20 text-safe-dark flex items-center justify-center"><${Icon} n="image" size=${24}/></div><div className="mt-3 font-semibold text-navy text-sm">${label}</div><div className="text-xs text-slate-500 mt-1">${hint}</div></div>`;
 
-    /* Ikon: path Lucide (inline, tanpa dependensi). Di proyek sungguhan: import {Plug,ShieldCheck,BookOpen} from 'lucide-react' */
+    /* Ikon: path Lucide (inline, tanpa dependensi) */
     const P = {
       plug: ["M12 22v-5", "M9 8V2", "M15 8V2", "M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"],
       shield: ["M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z", "m9 12 2 2 4-4"],
@@ -75,92 +90,461 @@
       zap: ["M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"],
       warn: ["m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3", "M12 9v4", "M12 17h.01"],
       image: ["M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z", "M9 7a2 2 0 1 0 0 4 2 2 0 0 0 0-4z", "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"],
-      scan: ["M3 7V5a2 2 0 0 1 2-2h2", "M17 3h2a2 2 0 0 1 2 2v2", "M21 17v2a2 2 0 0 1-2 2h-2", "M7 21H5a2 2 0 0 1-2-2v-2", "M7 12h10"]
+      scan: ["M3 7V5a2 2 0 0 1 2-2h2", "M17 3h2a2 2 0 0 1 2 2v2", "M21 17v2a2 2 0 0 1-2 2h-2", "M7 21H5a2 2 0 0 1-2-2v-2", "M7 12h10"],
+      cube: ["M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z", "m3.27 6.96 8.73 5.04 8.73-5.04", "M12 22.08V12"],
+      close: ["M18 6 6 18", "m6 6 12 12"]
     };
     const Icon = ({ n, size = 24, className = '' }) => html`<svg width=${size} height=${size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className=${className}>${P[n].map((d, i) => html`<path key=${i} d=${d}/>`)}</svg>`;
 
     const Led = ({ on, color }) => html`<span className=${'inline-block w-6 h-6 rounded-full transition-all duration-300 ' + (on ? '' : 'bg-slate-600')} style=${on ? { background: color, boxShadow: '0 0 22px 6px ' + color } : {}}></span>`;
 
-    function Nav() {
+    function Nav({ onOpenModal }) {
       return html`<header className="absolute top-0 inset-x-0 z-10"><div className="max-w-6xl mx-auto px-5 py-5 flex items-center justify-between">
   <div className="flex items-center gap-2 text-white font-extrabold text-lg"><span className="w-8 h-8 rounded-lg bg-safe flex items-center justify-center text-navy"><${Icon} n="zap" size=${18}/></span>EDU-BOARD</div>
-  <nav className="hidden sm:flex gap-6 text-sm text-slate-300"><a href="#demo" className="hover:text-white">Demo</a><a href="#fitur" className="hover:text-white">Keunggulan</a><a href="#cara" className="hover:text-white">Cara Kerja</a><a href="#guidebook" className="hover:text-white">Guidebook</a><a href="#harga" className="hover:text-white">Harga</a></nav>
+  <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-300">
+    <button onClick=${onOpenModal} className="text-safe font-semibold hover:text-white flex items-center gap-1.5 transition"><${Icon} n="cube" size=${16}/>Demo 3D</button>
+    <a href="#fitur" className="hover:text-white transition">Keunggulan</a>
+    <a href="#cara" className="hover:text-white transition">Cara Kerja</a>
+    <a href="#guidebook" className="hover:text-white transition">Guidebook</a>
+    <a href="#harga" className="hover:text-white transition">Harga</a>
+  </nav>
  </div></header>`;
     }
 
-    function Hero() {
+    function Hero({ onOpenModal }) {
       return html`<section className="relative bg-navy grid-bg text-white overflow-hidden">
   <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-safe/20 blur-3xl"></div>
-  <${Nav}/>
+  <${Nav} onOpenModal=${onOpenModal}/>
   <div className="relative max-w-6xl mx-auto px-5 pt-32 pb-24 grid md:grid-cols-2 gap-12 items-center">
    <div>
     <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide bg-white/10 border border-white/15 rounded-full px-3 py-1 text-safe"><span className="w-2 h-2 rounded-full bg-safe animate-pulse"></span>PRE-ORDER DIBUKA</span>
     <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold leading-tight">EDU-BOARD: <span className="text-safe">Fool-Proof</span> Starter Kit.</h1>
     <p className="mt-4 text-xl sm:text-2xl font-semibold text-slate-200">Belajar Elektronika Tanpa Takut Komponen Terbakar.</p>
     <p className="mt-4 text-slate-400 max-w-md">Satu kabel salah tidak lagi berarti power supply hangus. Rakit, coba, dan belajar dengan aman.</p>
-    <div className="mt-8 flex flex-wrap gap-3">
+    <div className="mt-8 flex flex-wrap items-center gap-3">
      <a href="#harga" className="bg-safe hover:bg-safe-dark text-navy font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-safe/30 transition">Pre-Order Sekarang Rp 149.000</a>
-     <a href="#demo" className="border border-white/25 hover:bg-white/10 px-6 py-3.5 rounded-xl font-semibold transition">Coba Demo</a>
+     <button onClick=${onOpenModal} className="inline-flex items-center gap-2 border border-safe/60 bg-safe/10 hover:bg-safe hover:text-navy text-safe px-6 py-3.5 rounded-xl font-bold transition shadow-lg shadow-safe/10">
+       <${Icon} n="cube" size=${19}/>
+       Coba Demo Self-Diagnose
+     </button>
     </div>
    </div>
    <div className="relative">
     ${IMAGES.hero ? html`<img src=${IMAGES.hero} alt="EDU-BOARD" className="rounded-3xl w-full shadow-2xl"/>` : null}<div className=${(IMAGES.hero ? 'hidden ' : '') + 'rounded-3xl bg-navy-700 border border-white/10 p-6 shadow-2xl'}>
      <div className="flex justify-between items-center mb-5"><span className="text-xs text-slate-400 font-mono">EDU-BOARD v1</span><div className="flex gap-2"><${Led} on=${true} color="#16C47F"/><${Led} on=${false}/></div></div>
      <div className="grid grid-cols-6 gap-2">${Array.from({ length: 24 }).map((_, i) => html`<div key=${i} className=${'h-8 rounded ' + (i % 7 === 0 ? 'bg-safe/70' : 'bg-white/10')}></div>`)}</div>
-     <div className="mt-5 flex gap-3"><div className="flex-1 h-10 rounded-lg bg-navy-500 flex items-center justify-center text-xs font-semibold">PRE-FLIGHT CHECK</div><div className="w-24 h-10 rounded-lg bg-white/10 border border-dashed border-white/30 flex items-center justify-center text-[10px] text-slate-400">JST ▸ asimetris</div></div>
+     <div className="mt-5 flex gap-3">
+       <button onClick=${onOpenModal} className="flex-1 h-10 rounded-lg bg-navy-500 hover:bg-safe hover:text-navy text-white transition flex items-center justify-center text-xs font-semibold gap-1.5">
+         <${Icon} n="cube" size=${14}/> PRE-FLIGHT CHECK 3D
+       </button>
+       <div className="w-24 h-10 rounded-lg bg-white/10 border border-dashed border-white/30 flex items-center justify-center text-[10px] text-slate-400">JST ▸ asimetris</div>
+     </div>
     </div>
    </div>
   </div>
  </section>`;
     }
 
-    function Demo() {
-      const [scenario, setScenario] = useState('ok');
-      const [phase, setPhase] = useState('idle');
-      const t = useRef();
-      useEffect(() => () => clearTimeout(t.current), []);
-      const run = () => { if (phase === 'scanning') return; setPhase('scanning'); t.current = setTimeout(() => setPhase(scenario === 'ok' ? 'ok' : 'short'), 1800); };
-      const pick = s => { clearTimeout(t.current); setScenario(s); setPhase('idle'); };
-      const l1 = { idle: 'bg-slate-600', scanning: 'bg-amber-400 animate-pulse', ok: 'flow', short: 'flowr' }[phase];
-      const l2 = { idle: 'bg-slate-600', scanning: 'bg-slate-600', ok: 'flow', short: 'bg-slate-600 opacity-40' }[phase];
-      const msg = {
-        idle: { c: 'text-slate-300', t: 'Siap. Pilih skenario, lalu tekan tombol pemeriksaan.' },
-        scanning: { c: 'text-amber-300', t: 'Mendeteksi Rangkaian...' },
-        ok: { c: 'text-safe', t: 'Lampu Hijau: Wiring Aman, Daya Dialirkan' },
-        short: { c: 'text-red-400', t: 'Lampu Merah: Korsleting Dicegah!' }
-      }[phase];
-      const btn = (s, label) => html`<button onClick=${() => pick(s)} className=${'px-4 py-2 rounded-lg text-sm font-semibold transition ' + (scenario === s ? 'bg-white text-navy' : 'bg-white/10 text-slate-300 hover:bg-white/20')}>${label}</button>`;
-      return html`<section id="demo" className="bg-navy py-20 px-5">
-  <div className="max-w-3xl mx-auto text-center">
-   <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Rasakan Sendiri: <span className="text-safe">Self-Diagnose</span></h2>
-   <p className="mt-3 text-slate-400">Simulasikan dua kondisi rangkaian, lalu lihat bagaimana EDU-BOARD melindungi komponen Anda.</p>
-   <div className="mt-8 rounded-3xl bg-navy-700 border border-white/10 p-5 sm:p-8 shadow-2xl text-left">
-    <div className="flex flex-wrap gap-2 justify-center mb-6"><span className="text-xs text-slate-400 self-center mr-1">Skenario:</span>${btn('ok', 'Wiring Benar')}${btn('short', 'Kabel Korsleting')}</div>
-    <div className="flex items-center gap-2 sm:gap-3">
-     <div className="w-16 sm:w-24 shrink-0 rounded-xl bg-navy-500 py-4 text-center text-[11px] sm:text-xs font-semibold text-white">Sumber<br/>Daya</div>
-     <div className=${'flex-1 h-2 rounded-full transition ' + l1}></div>
-     <div className="shrink-0 rounded-xl bg-navy border border-white/15 px-3 sm:px-5 py-4 text-center">
-      <div className="text-[10px] sm:text-xs text-slate-400 mb-2">Modul Self-Diagnose</div>
-      <div className="flex gap-3 justify-center"><${Led} on=${phase === 'ok'} color="#16C47F"/><${Led} on=${phase === 'short'} color="#EF4444"/></div>
-     </div>
-     <div className=${'flex-1 h-2 rounded-full transition ' + l2}></div>
-     <div className=${'w-16 sm:w-24 shrink-0 rounded-xl py-4 text-center text-[11px] sm:text-xs font-semibold transition ' + (phase === 'short' ? 'bg-red-500/20 text-red-300 border border-red-400/40' : 'bg-navy-500 text-white')}>${phase === 'short' ? html`<${Icon} n="warn" size=${18} className="mx-auto mb-1"/>` : null}Rangkaian<br/>Anda</div>
-    </div>
-    <div className="mt-8 min-h-[88px] rounded-2xl bg-black/25 border border-white/10 p-4 flex items-center gap-3">
-     ${phase === 'scanning' ? html`<span className="w-5 h-5 rounded-full border-2 border-amber-300 border-t-transparent animate-spin shrink-0"></span>` : null}
-     ${phase === 'ok' ? html`<span className="text-safe shrink-0"><${Icon} n="check" size=${24}/></span>` : null}
-     ${phase === 'short' ? html`<span className="text-red-400 shrink-0"><${Icon} n="warn" size=${24}/></span>` : null}
-     <div><div className=${'font-bold text-lg ' + msg.c}>${msg.t}</div>
-     ${phase === 'short' ? html`<div className="text-sm text-slate-400 mt-1">Arus diblokir PTC Resettable Fuse. Power supply dan komponen selamat.</div>` : null}
-     ${phase === 'ok' ? html`<div className="text-sm text-slate-400 mt-1">Aman untuk dinyalakan. Selamat bereksperimen!</div>` : null}</div>
-    </div>
-    <div className="mt-6 flex flex-wrap gap-3 justify-center">
-     <button onClick=${run} disabled=${phase === 'scanning'} className="bg-safe hover:bg-safe-dark disabled:opacity-60 text-navy font-bold px-7 py-3 rounded-xl shadow-lg shadow-safe/20 transition">Tekan Pre-Flight Check</button>
-     ${phase === 'ok' || phase === 'short' ? html`<button onClick=${() => setPhase('idle')} className="border border-white/25 text-white px-5 py-3 rounded-xl font-semibold hover:bg-white/10">Reset</button>` : null}
-    </div>
-   </div>
-  </div>
- </section>`;
+    /* Modal Simulasi 3D Self-Diagnose (diadaptasi langsung dari edu.html) */
+    function SimulationModal({ isOpen, onClose }) {
+      const mountRef = useRef(null);
+
+      useEffect(() => {
+        if (!isOpen || !mountRef.current) return;
+
+        const container = mountRef.current;
+        const labelsContainer = container.querySelector('#sim-labels-layer');
+        const stEl = container.querySelector('#st');
+        const curEl = container.querySelector('#cur');
+        const goBtn = container.querySelector('#go');
+        const rotBtn = container.querySelector('#rot');
+        const resetBtn = container.querySelector('#reset');
+        const segBtns = container.querySelectorAll('.seg-btn');
+
+        const W = () => container.clientWidth || window.innerWidth;
+        const H = () => container.clientHeight || window.innerHeight;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0B1F3A);
+        scene.fog = new THREE.Fog(0x0B1F3A, 20, 45);
+
+        const cam = new THREE.PerspectiveCamera(42, W() / H(), 0.1, 100);
+        cam.position.set(9, 8, 11).multiplyScalar(W() / H() < 0.8 ? 1.7 : 1);
+
+        const ren = new THREE.WebGLRenderer({ antialias: true });
+        ren.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        ren.setSize(W(), H());
+
+        const dom = ren.domElement;
+        dom.style.cssText = 'position:absolute;inset:0;touch-action:none;cursor:grab;width:100%;height:100%;';
+        container.insertBefore(dom, container.firstChild);
+
+        const ctl = new THREE.OrbitControls(cam, dom);
+        ctl.enableDamping = true;
+        ctl.autoRotate = true;
+        ctl.autoRotateSpeed = 0.7;
+        ctl.maxPolarAngle = Math.PI * 0.48;
+        ctl.minDistance = 6;
+        ctl.maxDistance = 26;
+        ctl.target.set(0, 0.3, 0);
+
+        scene.add(new THREE.HemisphereLight(0xcfe3ff, 0x0b1f3a, 0.95));
+        const dl = new THREE.DirectionalLight(0xffffff, 0.9);
+        dl.position.set(6, 10, 6);
+        scene.add(dl);
+
+        const pl = (c, x, y, z) => {
+          const l = new THREE.PointLight(c, 0, 5);
+          l.position.set(x, y, z);
+          scene.add(l);
+          return l;
+        };
+        const gL = pl(0x16C47F, 1.9, 1, -1.4), rL = pl(0xEF4444, 1.9, 1, 1.4), spL = pl(0xFFB84D, 5.6, 1.2, 0);
+
+        const M = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.5, metalness: 0.1 }, o));
+        const add = (g, m, x, y, z) => {
+          const o = new THREE.Mesh(g, m);
+          o.position.set(x, y, z);
+          scene.add(o);
+          return o;
+        };
+        const Bx = (a, b, c) => new THREE.BoxGeometry(a, b, c), Cy = (r, h) => new THREE.CylinderGeometry(r, r, h, 20);
+
+        /* Papan & Modul */
+        add(Bx(15, 0.3, 8), M(0x12305A), 0, -0.15, 0);
+        add(Bx(5.6, 0.12, 4.8), M(0x0E6B4C, { roughness: 0.7 }), 0.3, 0.06, 0);
+
+        /* Sumber daya + konektor JST asimetris */
+        add(Bx(1.6, 0.9, 1.6), M(0x1D4780), -6, 0.45, 0);
+        add(Bx(0.5, 0.35, 0.9), M(0xEEF2F6), -5.05, 0.45, 0);
+        add(Bx(0.5, 0.14, 0.3), M(0xEEF2F6), -5.05, 0.69, 0.6);
+
+        /* PTC fuse */
+        const fuseMat = M(0xF2A93B, { roughness: 0.4 }), fuseBase = new THREE.Color(0xF2A93B), fuseHot = new THREE.Color(0xB91C1C);
+        add(Bx(1.3, 0.5, 0.9), fuseMat, -1.6, 0.37, 0);
+
+        /* Kabel */
+        const wA = M(0x6B7A90, { roughness: 0.3 }), wB = M(0x6B7A90, { roughness: 0.3 });
+        const wire = (x1, x2, m) => {
+          const o = add(Cy(0.08, x2 - x1), m, (x1 + x2) / 2, 0.45, 0);
+          o.rotation.z = Math.PI / 2;
+        };
+        wire(-4.8, -2.25, wA);
+        wire(-0.95, 5.1, wB);
+
+        /* Tombol Pre-Flight */
+        const btnBase = add(Cy(0.6, 0.2), M(0x222B3A), -0.2, 0.2, 1.5);
+        const cap = add(Cy(0.36, 0.3), M(0xE5E7EB), -0.2, 0.45, 1.5);
+        const ring = add(new THREE.TorusGeometry(0.42, 0.04, 8, 28), M(0x16C47F, { emissive: 0x16C47F, emissiveIntensity: 0.5 }), -0.2, 0.36, 1.5);
+        ring.rotation.x = Math.PI / 2;
+
+        /* LED hijau & merah */
+        const led = (x, z, col, dark) => {
+          const m = M(dark, { emissive: col, emissiveIntensity: 0 });
+          add(Cy(0.3, 0.25), M(0x222B3A), x, 0.2, z);
+          add(new THREE.SphereGeometry(0.28, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), m, x, 0.33, z);
+          return m;
+        };
+        const gM = led(1.9, -1.4, 0x16C47F, 0x0F5A3A);
+        const rM = led(1.9, 1.4, 0xEF4444, 0x6B1D1D);
+
+        /* Beban/rangkaian + jumper salah */
+        add(Bx(1.8, 0.7, 1.8), M(0x1D4780), 6, 0.35, 0);
+        const lM = M(0x2B4A6E, { emissive: 0x7DD3FC, emissiveIntensity: 0 });
+        add(new THREE.SphereGeometry(0.24, 16, 12), lM, 6.3, 0.85, 0);
+
+        const jump = new THREE.Group();
+        scene.add(jump);
+        [-0.6, 0.6].forEach(z => {
+          const p = new THREE.Mesh(Cy(0.07, 0.4), M(0xC2410C));
+          p.position.set(5.6, 0.85, z);
+          jump.add(p);
+        });
+        const jw = new THREE.Mesh(Cy(0.06, 1.2), M(0xC2410C, { emissive: 0x7C2D12, emissiveIntensity: 0.6 }));
+        jw.rotation.x = Math.PI / 2;
+        jw.position.set(5.6, 1.05, 0);
+        jump.add(jw);
+
+        const spM = add(new THREE.SphereGeometry(0.14, 10, 8), new THREE.MeshBasicMaterial({ color: 0xFFD27A }), 5.6, 1.05, 0);
+        spM.visible = false;
+
+        /* Partikel arus */
+        const xs = -4.8, xe = 5.1, xf = -2.25, N = 14;
+        const pm = new THREE.MeshBasicMaterial({ color: 0x7CF5C0 }), pg = new THREE.SphereGeometry(0.11, 10, 8), P_part = [];
+        for (let i = 0; i < N; i++) {
+          const m = new THREE.Mesh(pg, pm);
+          m.position.y = 0.45;
+          m.visible = false;
+          scene.add(m);
+          P_part.push({ m, u: i / N });
+        }
+
+        /* Label 3D */
+        const labs = [];
+        const createLab = (t, x, y, z, c = '') => {
+          const el = document.createElement('div');
+          el.className = 'sim-lab ' + c;
+          el.textContent = t;
+          labelsContainer.appendChild(el);
+          const o = { el, v: new THREE.Vector3(x, y, z) };
+          labs.push(o);
+          return el;
+        };
+
+        createLab('Sumber Daya 5V', -6, 1.5, 0);
+        const lFuse = createLab('PTC Resettable Fuse', -1.6, 1.1, 0);
+        createLab('Pre-Flight Check', -0.2, 1.1, 1.5);
+        createLab('LED Hijau · Aman', 1.9, 1.1, -1.4, 'g');
+        createLab('LED Merah · Korsleting', 1.9, 1.1, 1.4, 'r');
+        const lLoad = createLab('Rangkaian Anda', 6, 1.5, 0);
+
+        /* State simulasi */
+        let phase = 'idle', scen = 'ok', t0 = 0, gI = 0, rI = 0, lI = 0, heat = 0, cur = 0, capY = 0.45;
+        const clock = new THREE.Clock();
+        const TXT = {
+          idle: ['Siap', 'Pilih skenario, lalu tekan Pre-Flight Check.', ''],
+          scan: ['Mendeteksi Rangkaian...', 'Modul menguji rangkaian dengan arus kecil.', 'scan'],
+          ok: ['Lampu Hijau: Wiring Aman, Daya Dialirkan', 'Tidak ada korsleting. Arus mengalir ke rangkaian.', 'ok'],
+          short: ['Lampu Merah: Korsleting Dicegah!', 'PTC Fuse memblokir arus. Power supply & komponen selamat.', 'short']
+        };
+
+        function updateUI() {
+          const [a, b, c] = TXT[phase];
+          stEl.className = 'min-h-[66px] rounded-xl bg-black/40 p-3 border-l-4 border-slate-500 ' + c;
+          stEl.querySelector('b').textContent = a;
+          stEl.querySelector('span').textContent = b;
+          goBtn.disabled = phase === 'scan';
+          segBtns.forEach(btn => {
+            if (btn.dataset.s === scen) {
+              btn.className = 'seg-btn flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-white text-navy transition';
+            } else {
+              btn.className = 'seg-btn flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-white/10 text-white hover:bg-white/20 transition';
+            }
+          });
+        }
+
+        function runScan() {
+          if (phase === 'scan') return;
+          phase = 'scan';
+          t0 = clock.elapsedTime;
+          updateUI();
+        }
+
+        function pickScen(s) {
+          scen = s;
+          phase = 'idle';
+          jump.visible = s === 'short';
+          lLoad.textContent = s === 'short' ? 'Rangkaian · kabel salah' : 'Rangkaian Anda';
+          updateUI();
+        }
+
+        segBtns.forEach(b => {
+          b.onclick = () => pickScen(b.dataset.s);
+        });
+        goBtn.onclick = runScan;
+        resetBtn.onclick = () => pickScen(scen);
+        rotBtn.onclick = () => {
+          ctl.autoRotate = !ctl.autoRotate;
+          rotBtn.textContent = 'Putar otomatis: ' + (ctl.autoRotate ? 'ON' : 'OFF');
+        };
+
+        pickScen('ok');
+
+        /* Interaksi Raycast klik tombol 3D */
+        const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+        let down = null;
+        const hitTest = e => {
+          const rect = dom.getBoundingClientRect();
+          mouse.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+          ray.setFromCamera(mouse, cam);
+          return ray.intersectObjects([cap, btnBase]).length > 0;
+        };
+
+        const onPointerDown = e => { down = [e.clientX, e.clientY]; };
+        const onPointerUp = e => {
+          if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 6 && hitTest(e)) {
+            runScan();
+          }
+          down = null;
+        };
+        const onPointerMove = e => {
+          dom.style.cursor = hitTest(e) ? 'pointer' : 'grab';
+        };
+
+        dom.addEventListener('pointerdown', onPointerDown);
+        dom.addEventListener('pointerup', onPointerUp);
+        dom.addEventListener('pointermove', onPointerMove);
+
+        const onResize = () => {
+          if (!container) return;
+          const w = W(), h = H();
+          cam.aspect = w / h;
+          cam.updateProjectionMatrix();
+          ren.setSize(w, h);
+        };
+        window.addEventListener('resize', onResize);
+
+        const tc = { idle: 0x6B7A90, scan: 0xF2B84B, ok: 0x16C47F, short: 0xEF4444 };
+        const k = (dt, s) => Math.min(1, dt * s);
+
+        let reqId;
+        function tick() {
+          reqId = requestAnimationFrame(tick);
+          const dt = Math.min(clock.getDelta(), 0.05), now = clock.elapsedTime;
+          if (phase === 'scan' && now - t0 > 2.2) {
+            phase = scen;
+            updateUI();
+          }
+
+          const sc = phase === 'scan', ok = phase === 'ok', sh = phase === 'short', shs = sc && scen === 'short';
+
+          /* Tombol */
+          capY += ((sc && now - t0 < 0.4 ? 0.32 : 0.45) - capY) * k(dt, 18);
+          cap.position.y = capY;
+
+          /* LED */
+          const pulse = 0.25 + 0.2 * Math.sin(now * 16);
+          gI += ((ok ? 1 : sc ? pulse : 0) - gI) * k(dt, 10);
+          rI += ((sh ? 1 : shs ? 0.25 + 0.5 * Math.abs(Math.sin(now * 20)) : sc ? pulse : 0) - rI) * k(dt, 10);
+          lI += ((ok ? 1 : 0) - lI) * k(dt, 6);
+
+          gM.emissiveIntensity = gI * 1.6;
+          rM.emissiveIntensity = rI * 1.6;
+          lM.emissiveIntensity = lI * 1.6;
+          gL.intensity = gI * 1.8;
+          rL.intensity = rI * 1.8;
+
+          /* Fuse trip */
+          heat += ((sh ? 1 : shs ? 0.55 : 0) - heat) * k(dt, sh ? 1.5 : 2);
+          fuseMat.color.copy(fuseBase).lerp(fuseHot, heat);
+          fuseMat.emissive.copy(fuseHot).multiplyScalar(heat * 0.6);
+
+          /* Kabel */
+          wA.color.lerp(new THREE.Color(tc[phase]), 0.1);
+          wB.color.lerp(new THREE.Color(sh ? 0x3A4658 : tc[phase]), 0.1);
+          wA.emissive.copy(wA.color).multiplyScalar(0.45);
+          wB.emissive.copy(wB.color).multiplyScalar(0.45);
+
+          /* Percikan korsleting */
+          const sp = shs && now - t0 > 0.5 && now - t0 < 1.9;
+          spM.visible = sp && Math.random() > 0.3;
+          spL.intensity = sp ? Math.random() * 3 : 0;
+          spM.position.set(5.6 + (Math.random() - 0.5) * 0.3, 1.05 + (Math.random() - 0.5) * 0.2, (Math.random() - 0.5) * 0.8);
+
+          /* Arus */
+          cur += ((ok ? 0.45 : sh ? 0 : sc ? (shs ? 0.95 : 0.3) : 0) - cur) * k(dt, 5);
+          curEl.style.width = (cur * 100) + '%';
+          curEl.style.background = cur > 0.7 ? '#EF4444' : '#16C47F';
+
+          /* Partikel */
+          pm.color.set(sh ? 0xEF4444 : sc ? 0xF2B84B : 0x7CF5C0);
+          P_part.forEach((p, i) => {
+            if (phase === 'idle') { p.m.visible = false; return; }
+            p.m.visible = true;
+            if (sh) {
+              p.m.position.x = xs + (i / N) * (xf - xs);
+              p.m.scale.setScalar(0.7);
+            } else {
+              p.u = (p.u + dt * (ok ? 0.4 : 0.22)) % 1;
+              p.m.position.x = xs + p.u * (xe - xs);
+              p.m.scale.setScalar(sc ? 0.6 : 1);
+            }
+          });
+
+          lFuse.textContent = sh ? 'PTC Fuse · TRIP: arus diblokir' : 'PTC Resettable Fuse';
+          lFuse.className = 'sim-lab' + (sh ? ' r' : '');
+
+          /* Posisi label 3D */
+          const cW = W(), cH = H();
+          labs.forEach(o => {
+            const v = o.v.clone().project(cam);
+            o.el.style.display = v.z > 1 ? 'none' : 'block';
+            o.el.style.transform = `translate(${(v.x * 0.5 + 0.5) * cW}px, ${(-v.y * 0.5 + 0.5) * cH}px) translate(-50%, -120%)`;
+          });
+
+          ctl.update();
+          ren.render(scene, cam);
+        }
+
+        tick();
+
+        return () => {
+          cancelAnimationFrame(reqId);
+          window.removeEventListener('resize', onResize);
+          dom.removeEventListener('pointerdown', onPointerDown);
+          dom.removeEventListener('pointerup', onPointerUp);
+          dom.removeEventListener('pointermove', onPointerMove);
+          if (dom.parentNode) dom.parentNode.removeChild(dom);
+          labelsContainer.innerHTML = '';
+          ren.dispose();
+        };
+      }, [isOpen]);
+
+      if (!isOpen) return null;
+
+      return html`
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-5">
+          <div className="relative w-full h-full max-w-6xl max-h-[92vh] bg-navy border border-white/20 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+            
+            <!-- Header Modal -->
+            <div className="relative z-20 flex items-center justify-between px-5 py-4 bg-navy/90 border-b border-white/10 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-safe flex items-center justify-center text-navy font-bold">
+                  <${Icon} n="cube" size=${20}/>
+                </span>
+                <div>
+                  <h3 className="text-white font-extrabold text-base sm:text-lg">EDU-BOARD <span className="text-safe">Simulasi 3D</span></h3>
+                  <p className="text-xs text-slate-400">Modul Self-Diagnose & Pre-Flight Check Interaktif</p>
+                </div>
+              </div>
+              <button onClick=${onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Tutup">
+                <${Icon} n="close" size=${22}/>
+              </button>
+            </div>
+
+            <!-- Viewport 3D Canvas Container -->
+            <div ref=${mountRef} className="relative flex-1 w-full h-full overflow-hidden select-none">
+              <!-- Layer HTML 3D labels -->
+              <div id="sim-labels-layer" className="absolute inset-0 pointer-events-none z-10"></div>
+
+              <!-- Control Panel Overlay -->
+              <div className="absolute z-20 bottom-3 left-3 right-3 sm:bottom-auto sm:left-auto sm:right-5 sm:top-5 w-auto sm:w-80 bg-navy/90 backdrop-blur-md border border-white/15 rounded-2xl p-4 text-white shadow-2xl">
+                <div className="flex gap-2 mb-3">
+                  <button data-s="ok" className="seg-btn flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-white text-navy transition">Wiring Benar</button>
+                  <button data-s="short" className="seg-btn flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-white/10 text-white hover:bg-white/20 transition">Kabel Korsleting</button>
+                </div>
+                
+                <button id="go" className="w-full bg-safe hover:bg-safe-dark disabled:opacity-60 text-navy font-extrabold text-sm py-3 rounded-xl shadow-lg shadow-safe/25 transition">
+                  Tekan Pre-Flight Check
+                </button>
+
+                <div id="st" className="min-h-[66px] rounded-xl bg-black/40 p-3 mt-3 border-l-4 border-slate-500">
+                  <b className="block text-sm font-bold"></b>
+                  <span className="block text-xs text-slate-400 mt-1"></span>
+                </div>
+
+                <div className="mt-3 text-[11px] text-slate-400">
+                  Arus pada rangkaian (relatif)
+                  <div className="h-2 rounded-full bg-white/10 mt-1.5 overflow-hidden">
+                    <i id="cur" className="block h-full w-0 bg-safe transition-all duration-200"></i>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 mt-3">
+                  <button id="reset" className="flex-1 py-2 text-xs font-semibold bg-white/10 hover:bg-white/20 rounded-lg text-white transition">Reset</button>
+                  <button id="rot" className="flex-1 py-2 text-xs font-semibold bg-white/10 hover:bg-white/20 rounded-lg text-white transition">Putar otomatis: ON</button>
+                </div>
+
+                <p className="text-[10px] text-slate-400 mt-3 leading-relaxed hidden sm:block">
+                  💡 Drag mouse/sentuh untuk putar · scroll untuk zoom · tombol di papan 3D juga bisa diklik langsung.
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      `;
     }
 
     function Features() {
@@ -225,14 +609,24 @@
  </div></section>`;
     }
 
-    function How() {
-      const s = [{ n: 'book', t: 'Rakit Sesuai Guidebook', d: 'Ikuti skematik di kiri dan visual 3D di kanan. Tidak perlu menebak.' }, { n: 'plug', t: 'Sambungkan Konektor JST', d: 'Bentuk asimetris hanya mengizinkan satu arah. Salah colok jadi mustahil.' }, { n: 'shield', t: 'Tekan Pre-Flight Check', d: 'Modul memeriksa rangkaian sebelum daya dialirkan ke komponen.' }, { n: 'zap', t: 'Nyalakan & Belajar', d: 'LED hijau: daya mengalir. LED merah: arus diblokir, perbaiki lalu ulangi.' }];
+    function How({ onOpenModal }) {
+      const s = [
+        { n: 'book', t: 'Rakit Sesuai Guidebook', d: 'Ikuti skematik di kiri dan visual 3D di kanan. Tidak perlu menebak.' },
+        { n: 'plug', t: 'Sambungkan Konektor JST', d: 'Bentuk asimetris hanya mengizinkan satu arah. Salah colok jadi mustahil.' },
+        { n: 'shield', t: 'Tekan Pre-Flight Check', d: 'Modul memeriksa rangkaian sebelum daya dialirkan ke komponen.' },
+        { n: 'zap', t: 'Nyalakan & Belajar', d: 'LED hijau: daya mengalir. LED merah: arus diblokir, perbaiki lalu ulangi.' }
+      ];
       return html`<section id="cara" className="py-20 px-5 bg-[#F5F8FB]"><div className="max-w-6xl mx-auto">
   <div className="text-center max-w-2xl mx-auto"><h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Cara Kerja: 4 Langkah Aman</h2><p className="mt-3 text-slate-600">Dari kotak sampai LED menyala, tanpa rasa was-was.</p></div>
   <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">${s.map((x, i) => html`<div key=${i} className="relative bg-white rounded-2xl p-6 pt-8 border border-slate-200 hover:border-safe hover:shadow-lg transition">
    <span className="absolute -top-4 left-6 w-9 h-9 rounded-full bg-navy text-white font-bold flex items-center justify-center ring-4 ring-[#F5F8FB]">${i + 1}</span>
    <div className="w-12 h-12 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center"><${Icon} n=${x.n} size=${24}/></div>
    <h3 className="mt-4 text-lg font-bold text-navy">${x.t}</h3><p className="mt-2 text-sm text-slate-600 leading-relaxed">${x.d}</p></div>`)}</div>
+  <div className="mt-10 text-center">
+    <button onClick=${onOpenModal} className="inline-flex items-center gap-2 bg-navy hover:bg-navy-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg">
+      <${Icon} n="cube" size=${18} className="text-safe"/> Coba Simulasi Pre-Flight Check 3D
+    </button>
+  </div>
  </div></section>`;
     }
 
@@ -296,8 +690,20 @@
     }
 
     function App() {
-      return html`<main><${Hero}/><${Demo}/><${Features}/><${Gallery}/><${How}/><${Guidebook}/><${Pricing}/>
-  <footer className="bg-navy text-slate-400 text-sm text-center py-8 px-5">EDU-BOARD · Prototipe web landing page · Tim 9 Technopreneurship.</footer></main>`;
+      const [modalOpen, setModalOpen] = useState(false);
+
+      return html`
+        <main>
+          <${Hero} onOpenModal=${() => setModalOpen(true)}/>
+          <${Features}/>
+          <${Gallery}/>
+          <${How} onOpenModal=${() => setModalOpen(true)}/>
+          <${Guidebook}/>
+          <${Pricing}/>
+          <${SimulationModal} isOpen=${modalOpen} onClose=${() => setModalOpen(false)}/>
+          <footer className="bg-navy text-slate-400 text-sm text-center py-8 px-5">EDU-BOARD · Prototipe web landing page · Tim 9 Technopreneurship.</footer>
+        </main>
+      `;
     }
     ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
   </script>
