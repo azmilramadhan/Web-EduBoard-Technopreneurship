@@ -753,7 +753,7 @@
 
     #guidebook .eb3d-scr { position: relative; width: 100%; height: 100%; border-radius: 26px; overflow: hidden; background: #000; }
 
-    #guidebook .eb3d-scr iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    #guidebook .eb3d-scr iframe { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 0; display: block; transform-origin: 0 0; }
 
     #guidebook .eb3d-drv {
       display: inline-flex;
@@ -2126,6 +2126,24 @@
           boxRef.current.style.transform = `rotateX(${rot.rx}deg) rotateY(${rot.ry}deg)`;
         }
       }, [rot]);
+
+      // Pemutar Drive dirender pada lebar tetap (360px) lalu diskalakan agar pas memenuhi layar HP
+      useEffect(() => {
+        if (mode !== 'video') return;
+        const fit = () => {
+          const scr = document.querySelector('#guidebook .eb3d-scr');
+          const fr = scr && scr.querySelector('iframe');
+          if (!scr || !fr || !scr.clientWidth) return;
+          const BASE = 360, k = scr.clientWidth / BASE;
+          fr.style.width = BASE + 'px';
+          fr.style.height = (scr.clientHeight / k) + 'px';
+          fr.style.transform = 'scale(' + k + ')';
+        };
+        fit();
+        const t = setTimeout(fit, 120);
+        window.addEventListener('resize', fit);
+        return () => { clearTimeout(t); window.removeEventListener('resize', fit); };
+      }, [mode]);
 
       // Auto-rotation loop
       useEffect(() => {
