@@ -263,11 +263,12 @@
 
     const Led = ({ on, color }) => html`<span className=${'inline-block w-6 h-6 rounded-full transition-all duration-300 ' + (on ? '' : 'bg-slate-600')} style=${on ? { background: color, boxShadow: '0 0 22px 6px ' + color } : {}}></span>`;
 
-    function Nav({ onOpenModal }) {
+    function Nav({ onOpenModal, onOpenConnectorModal }) {
       return html`<header className="absolute top-0 inset-x-0 z-10"><div className="max-w-6xl mx-auto px-5 py-5 flex items-center justify-between">
   <div className="flex items-center gap-2 text-white font-extrabold text-lg"><span className="w-8 h-8 rounded-lg bg-safe flex items-center justify-center text-navy"><${Icon} n="zap" size=${18}/></span>EDU-BOARD</div>
-  <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-300">
-    <button onClick=${onOpenModal} className="text-safe font-semibold hover:text-white flex items-center gap-1.5 transition"><${Icon} n="cube" size=${16}/>Demo 3D</button>
+  <nav className="hidden sm:flex items-center gap-5 text-sm text-slate-300">
+    <button onClick=${onOpenModal} className="text-safe font-semibold hover:text-white flex items-center gap-1.5 transition" title="Simulasi 3D Self-Diagnose"><${Icon} n="cube" size=${16}/>Demo Self-Diagnose</button>
+    <button onClick=${onOpenConnectorModal} className="text-cyan-400 font-semibold hover:text-white flex items-center gap-1.5 transition" title="Simulasi 3D Konektor Fool-Proof"><${Icon} n="plug" size=${16}/>Demo Konektor</button>
     <a href="#fitur" className="hover:text-white transition">Keunggulan</a>
     <a href="#cara" className="hover:text-white transition">Cara Kerja</a>
     <a href="#guidebook" className="hover:text-white transition">Guidebook</a>
@@ -277,7 +278,7 @@
     }
 
     /* Komponen Kemasan EDU-BOARD 3D dengan Efek Cahaya, Animasi Scale-Up, & Auto-Rotate */
-    function Hero3DBox({ onOpenModal }) {
+    function Hero3DBox({ onOpenModal, onOpenConnectorModal }) {
       const stageRef = useRef(null);
       const boxRef = useRef(null);
       const worldRef = useRef(null);
@@ -507,19 +508,24 @@
               <button onClick=${() => rotateToFace(-8, -90)} className="text-[10px] bg-white/10 hover:bg-white/20 text-slate-200 px-2 py-1 rounded-md transition font-medium">Kanan</button>
             </div>
             
-            <button onClick=${onOpenModal} className="text-xs bg-safe hover:bg-safe-dark text-navy font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-lg shadow-safe/20">
-              <${Icon} n="zap" size=${14}/> Tes Pre-Flight
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button onClick=${onOpenConnectorModal} className="text-xs bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition">
+                <${Icon} n="plug" size=${13}/> Tes Konektor
+              </button>
+              <button onClick=${onOpenModal} className="text-xs bg-safe hover:bg-safe-dark text-navy font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-lg shadow-safe/20">
+                <${Icon} n="zap" size=${14}/> Tes Pre-Flight
+              </button>
+            </div>
           </div>
 
         </div>
       `;
     }
 
-    function Hero({ onOpenModal }) {
+    function Hero({ onOpenModal, onOpenConnectorModal }) {
       return html`<section className="relative bg-navy grid-bg text-white overflow-hidden">
   <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-safe/20 blur-3xl"></div>
-  <${Nav} onOpenModal=${onOpenModal}/>
+  <${Nav} onOpenModal=${onOpenModal} onOpenConnectorModal=${onOpenConnectorModal}/>
   <div className="relative max-w-6xl mx-auto px-5 pt-32 pb-24 grid md:grid-cols-2 gap-12 items-center">
    <div>
     <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide bg-white/10 border border-white/15 rounded-full px-3 py-1 text-safe"><span className="w-2 h-2 rounded-full bg-safe animate-pulse"></span>PRE-ORDER DIBUKA</span>
@@ -528,14 +534,18 @@
     <p className="mt-4 text-slate-400 max-w-md">Satu kabel salah tidak lagi berarti power supply hangus. Rakit, coba, dan belajar dengan aman.</p>
     <div className="mt-8 flex flex-wrap items-center gap-3">
      <a href="#harga" className="bg-safe hover:bg-safe-dark text-navy font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-safe/30 transition">Pre-Order Sekarang Rp 149.000</a>
-     <button onClick=${onOpenModal} className="inline-flex items-center gap-2 border border-safe/60 bg-safe/10 hover:bg-safe hover:text-navy text-safe px-6 py-3.5 rounded-xl font-bold transition shadow-lg shadow-safe/10">
+     <button onClick=${onOpenModal} className="inline-flex items-center gap-2 border border-safe/60 bg-safe/10 hover:bg-safe hover:text-navy text-safe px-5 py-3.5 rounded-xl font-bold transition shadow-lg shadow-safe/10">
        <${Icon} n="cube" size=${19}/>
-       Coba Demo Self-Diagnose
+       Demo Self-Diagnose
+     </button>
+     <button onClick=${onOpenConnectorModal} className="inline-flex items-center gap-2 border border-cyan-400/60 bg-cyan-500/10 hover:bg-cyan-400 hover:text-navy text-cyan-300 px-5 py-3.5 rounded-xl font-bold transition shadow-lg shadow-cyan-500/10">
+       <${Icon} n="plug" size=${19}/>
+       Demo Konektor Fool-Proof
      </button>
     </div>
    </div>
    <div className="relative">
-    <${Hero3DBox} onOpenModal=${onOpenModal}/>
+    <${Hero3DBox} onOpenModal=${onOpenModal} onOpenConnectorModal=${onOpenConnectorModal}/>
    </div>
   </div>
  </section>`;
@@ -943,7 +953,405 @@
       `;
     }
 
-    function Features() {
+    /* Modal Simulasi 3D Konektor Fool-Proof JST-XH 4-Pin */
+    function ConnectorModal({ isOpen, onClose }) {
+      const mountRef = useRef(null);
+
+      useEffect(() => {
+        if (!isOpen || !mountRef.current) return;
+        let isMounted = true;
+        const container = mountRef.current;
+        const host = container.querySelector('#conn-c');
+        const st = container.querySelector('#conn-st');
+        const bOk = container.querySelector('#conn-bOk');
+        const bBad = container.querySelector('#conn-bBad');
+        const bRs = container.querySelector('#conn-bRs');
+        const n0 = container.querySelector('#conn-n0');
+        const n1 = container.querySelector('#conn-n1');
+        const l0 = container.querySelector('#conn-l0');
+        const l1 = container.querySelector('#conn-l1');
+        const d0 = container.querySelector('#conn-d0');
+        const d1 = container.querySelector('#conn-d1');
+
+        const R = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        R.shadowMap.enabled = true;
+        R.shadowMap.type = THREE.PCFSoftShadowMap;
+        host.appendChild(R.domElement);
+
+        const S = new THREE.Scene();
+        const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
+        cam.position.set(13, 7, 13);
+        const oc = new THREE.OrbitControls(cam, R.domElement);
+        oc.target.set(3.5, 0, 0);
+        oc.enableDamping = true;
+        oc.minDistance = 6;
+        oc.maxDistance = 40;
+
+        // Cahaya studio
+        S.add(new THREE.HemisphereLight(0xdbe8ff, 0x1a2a44, 0.75));
+        const dl = new THREE.DirectionalLight(0xffffff, 0.95);
+        dl.position.set(6, 14, 9);
+        dl.castShadow = true;
+        dl.shadow.mapSize.set(1024, 1024);
+        dl.shadow.radius = 5;
+        dl.shadow.bias = -0.0005;
+        Object.assign(dl.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 40 });
+        dl.shadow.camera.updateProjectionMatrix();
+        S.add(dl);
+        const fl = new THREE.DirectionalLight(0x6aa8ff, 0.35);
+        fl.position.set(-8, 4, -6);
+        S.add(fl);
+
+        const M = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.5, metalness: 0 }, o));
+        const box = (w, h, d, m, x = 0, y = 0, z = 0, p = S) => {
+          const k = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+          k.position.set(x, y, z);
+          k.castShadow = k.receiveShadow = true;
+          p.add(k);
+          return k;
+        };
+        const hlMat = () => new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.6 });
+
+        // Lantai & grid
+        const gp = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.4 }));
+        gp.rotation.x = -Math.PI / 2;
+        gp.position.y = -1.95;
+        gp.receiveShadow = true;
+        S.add(gp);
+        const gr = new THREE.GridHelper(60, 60, 0x1d3a68, 0x132a50);
+        gr.position.y = -1.951;
+        gr.material.transparent = true;
+        gr.material.opacity = 0.6;
+        S.add(gr);
+
+        // PCB
+        const cv = document.createElement('canvas');
+        cv.width = 512;
+        cv.height = 360;
+        const cx = cv.getContext('2d');
+        cx.fillStyle = '#1d7a4a';
+        cx.fillRect(0, 0, 512, 360);
+        cx.strokeStyle = '#33b06c';
+        cx.lineWidth = 3;
+        [[20, 40, 200, 40], [200, 40, 240, 80], [300, 60, 480, 60], [60, 120, 60, 260], [420, 100, 420, 250], [100, 300, 260, 300]].forEach(l => {
+          cx.beginPath(); cx.moveTo(l[0], l[1]); cx.lineTo(l[2], l[3]); cx.stroke();
+        });
+        cx.fillStyle = '#e8f5ec';
+        cx.font = 'bold 30px sans-serif';
+        cx.fillText('EDU-BOARD', 30, 335);
+        cx.font = '20px sans-serif';
+        cx.fillText('J1  JST-XH 4P', 300, 335);
+        const pm0 = M(0x155c38, { roughness: 0.7 });
+        box(10, 0.4, 7.4, [pm0, pm0, new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(cv), roughness: 0.6 }), pm0, pm0, pm0], 1.2, -1.7, 0);
+        box(1.6, 0.3, 1.1, M(0x15171c), -2.4, -1.35, -2.4);
+        box(1, 0.3, 1, M(0x15171c), 3.4, -1.35, -2.5);
+        const capMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.8, 20), M(0x2b4fa8));
+        capMesh.position.set(1.6, -1.1, -2.6);
+        capMesh.castShadow = true;
+        S.add(capMesh);
+
+        // Soket betina
+        const sg = new THREE.Group();
+        S.add(sg);
+        const D = 3.4, H = 3, W = 5.6, t = 0.45, mS = M(0xe9edf1, { roughness: 0.55 });
+        box(t, H, W, mS, -D / 2 + t / 2, 0, 0, sg);
+        box(D, t, W, mS, 0, -H / 2 + t / 2, 0, sg);
+        box(D, t, W, mS, 0, H / 2 - t / 2, 0, sg);
+        box(D, H, t, mS, 0, 0, W / 2 - t / 2, sg);
+        box(D, H, t, mS, 0, 0, -W / 2 + t / 2, sg);
+        box(D - t, 0.5, 0.4, mS, t / 2, 0.8, 1.6, sg); // rel pengunci asimetris
+        const hl0 = box(D - t + 0.02, 0.52, 0.44, hlMat(), t / 2, 0.8, 1.6, sg);
+        hl0.castShadow = false;
+        const lt = box(1.1, 0.22, 0.9, M(0xcdd5de), 0.1, H / 2 + 0.11, -1.4, sg); // kancing
+        const mP = M(0xe0b84a, { metalness: 0.75, roughness: 0.28 });
+        for (let i = 0; i < 4; i++) box(2.1, 0.32, 0.32, mP, -D / 2 + t + 1.05, -0.15, i - 1.5, sg);
+
+        // Steker jantan + kabel
+        const pg = new THREE.Group();
+        pg.position.x = 7;
+        S.add(pg);
+        const mG = M(0xffffff, { roughness: 0.4 }), Dp = 2.8, Hp = 1.95, Wp = 4.5, g = 0.55, gz = 1.6, gw = 0.6, bh = Hp - g;
+        box(Dp, bh, Wp, mG, 0, -Hp / 2 + bh / 2, 0, pg);
+        const zr = gz - gw / 2, zl2 = gz + gw / 2;
+        box(Dp, g, zr + Wp / 2, mG, 0, Hp / 2 - g / 2, (zr - Wp / 2) / 2, pg);
+        box(Dp, g, Wp / 2 - zl2, mG, 0, Hp / 2 - g / 2, (zl2 + Wp / 2) / 2, pg);
+        const hl1 = box(Dp - 0.2, 0.04, gw + 0.02, hlMat(), 0, Hp / 2 - g + 0.03, gz, pg);
+        hl1.castShadow = false;
+        hl1.visible = false;
+        [0xdc2626, 0x1b1b1f, 0xfacc15, 0x2563eb].forEach((c, i) => {
+          const z = i - 1.5;
+          box(0.05, 0.28, 0.28, M(0x0b0b0e), -Dp / 2, -0.15, z, pg);
+          const cu = new THREE.CatmullRomCurve3([[Dp / 2 - 0.2, -0.15, z], [Dp / 2 + 1.2, -0.1, z * 1.1], [Dp / 2 + 3.2, 0.4, z * 1.9], [Dp / 2 + 5.6, 0.2, z * 2.6]].map(a => new THREE.Vector3(...a)));
+          const w = new THREE.Mesh(new THREE.TubeGeometry(cu, 40, 0.17, 8), M(c, { roughness: 0.6 }));
+          w.castShadow = true;
+          pg.add(w);
+        });
+
+        // Partikel hijau
+        const N = 50, pp = new Float32Array(N * 3), p0 = [], pv = [], pgm = new THREE.BufferGeometry();
+        pgm.setAttribute('position', new THREE.BufferAttribute(pp, 3));
+        const pmt = new THREE.PointsMaterial({ color: 0x4ade80, size: 0.22, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const pts = new THREE.Points(pgm, pmt);
+        pts.frustumCulled = false;
+        S.add(pts);
+
+        // Animasi
+        const ease = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+        const tween = (d, f) => new Promise(r => {
+          let s;
+          function k(n) {
+            if (!isMounted) return r();
+            s = s ?? n;
+            const t = Math.min(1, (n - s) / d);
+            f(t);
+            t < 1 ? requestAnimationFrame(k) : r();
+          }
+          requestAnimationFrame(k);
+        });
+        const goto = (x, rx, d) => {
+          const x0 = pg.position.x, r0 = pg.rotation.x;
+          return tween(d, t => {
+            const e = ease(t);
+            pg.position.x = x0 + (x - x0) * e;
+            pg.rotation.x = r0 + (rx - r0) * e;
+          });
+        };
+        const burst = () => {
+          for (let i = 0; i < N; i++) {
+            p0[i] = [1.75, -0.5 + Math.random() * 1.6, (Math.random() - 0.5) * 4.4];
+            pv[i] = [Math.random() * 2.2 + 0.3, Math.random() * 2.2, (Math.random() - 0.5) * 3.5];
+          }
+          return tween(900, t => {
+            for (let i = 0; i < N; i++) {
+              pp[i * 3] = p0[i][0] + pv[i][0] * t;
+              pp[i * 3 + 1] = p0[i][1] + pv[i][1] * t - 1.5 * t * t;
+              pp[i * 3 + 2] = p0[i][2] + pv[i][2] * t;
+            }
+            pgm.attributes.position.needsUpdate = true;
+            pmt.opacity = 1 - t;
+          });
+        };
+        const latch = () => tween(300, t => { lt.position.y = H / 2 + 0.11 - 0.2 * Math.sin(t * Math.PI); });
+        const glow = (m, hex, ms) => {
+          m.emissive.setHex(hex);
+          return tween(ms, t => { m.emissiveIntensity = 1 - t; }).then(() => {
+            if (!isMounted) return;
+            m.emissive.setHex(0);
+            m.emissiveIntensity = 1;
+          });
+        };
+
+        let ac;
+        const snd = (f1, f2, d, ty) => {
+          try {
+            ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+            if (ac.state === 'suspended') ac.resume();
+            const T = ac.currentTime, o = ac.createOscillator(), gn = ac.createGain();
+            o.type = ty;
+            o.frequency.setValueAtTime(f1, T);
+            o.frequency.exponentialRampToValueAtTime(f2, T + d);
+            gn.gain.setValueAtTime(0.15, T);
+            gn.gain.exponentialRampToValueAtTime(0.001, T + d);
+            o.connect(gn).connect(ac.destination);
+            o.start();
+            o.stop(T + d);
+          } catch (e) {}
+        };
+
+        const X0 = 7;
+        const baseClass = 'px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold text-center transition-opacity duration-300 ';
+        const say = (m, ok) => {
+          if (!st) return;
+          st.textContent = m;
+          st.className = baseClass + (ok ? 'border-emerald-400 bg-emerald-500/20 text-emerald-300 opacity-100' : 'border-rose-400 bg-rose-500/20 text-rose-300 opacity-100');
+        };
+        const hide = () => {
+          if (!st) return;
+          st.className = baseClass + 'opacity-0 border-transparent';
+        };
+        const lock = b => { [bOk, bBad, bRs].forEach(i => { if (i) i.disabled = b; }); };
+        const home = async rot => {
+          await goto(X0, pg.rotation.x, pg.position.x < X0 - 0.1 ? 450 : 1);
+          if (Math.abs(pg.rotation.x - rot) > 1e-6) await goto(X0, rot, 700);
+        };
+
+        bOk.onclick = async () => {
+          lock(true); hide(); await home(0);
+          if (!isMounted) return;
+          await goto(0.7, 0, 1400);
+          if (!isMounted) return;
+          await goto(0.15, 0, 350);
+          if (!isMounted) return;
+          snd(2400, 900, 0.06, 'square');
+          burst(); latch(); glow(mS, 0x16a34a, 700);
+          say('BERHASIL: Polaritas Tepat & Terkunci Rapat', 1);
+          lock(false);
+        };
+
+        bBad.onclick = async () => {
+          lock(true); hide(); await home(Math.PI);
+          if (!isMounted) return;
+          await goto(3.9, Math.PI, 900);
+          if (!isMounted) return;
+          await goto(3.15, Math.PI, 300);
+          if (!isMounted) return;
+          snd(160, 60, 0.18, 'sine');
+          glow(mG, 0xdc2626, 900);
+          say('TERTAHAN FISIK: Posisi Terbalik, Tidak Bisa Masuk!', 0);
+          await tween(700, t => {
+            const a = 1 - t;
+            pg.position.z = Math.sin(t * 50) * 0.14 * a;
+            pg.position.x = 3.15 + Math.sin(t * 38) * 0.05 * a;
+            pg.rotation.z = Math.sin(t * 44) * 0.04 * a;
+          });
+          if (!isMounted) return;
+          pg.position.set(3.15, 0, 0);
+          pg.rotation.z = 0;
+          lock(false);
+        };
+
+        bRs.onclick = async () => {
+          lock(true); hide(); await home(0); lock(false);
+        };
+
+        // Anotasi
+        const items = [{ el: n0, l: l0, d: d0, hl: hl0 }, { el: n1, l: l1, d: d1, hl: hl1 }];
+        hl0.visible = true;
+        items.forEach(it => {
+          if (!it.el) return;
+          it.el.onclick = () => {
+            const dt = it.el.querySelector('.det');
+            if (dt) dt.classList.toggle('hidden');
+            if (it.hl) it.hl.visible = dt && !dt.classList.contains('hidden');
+          };
+        });
+
+        function ann() {
+          if (!host || !isMounted) return;
+          const hr = host.getBoundingClientRect();
+          items.forEach((it, i) => {
+            if (!it.el || !it.l || !it.d) return;
+            const pt = (i ? pg.localToWorld(new THREE.Vector3(0, 0.7, 1.6)) : new THREE.Vector3(1.7, 0.8, 1.6)).project(cam);
+            const x = ((pt.x + 1) / 2) * hr.width;
+            const y = ((1 - pt.y) / 2) * hr.height;
+            const r = it.el.getBoundingClientRect();
+            const ax = r.left - hr.left;
+            const ay = r.top - hr.top + 16;
+            const op = pt.z > 1 ? 0 : (cam.position.x > 0 ? 1 : 0.25);
+            it.l.setAttribute('x1', ax);
+            it.l.setAttribute('y1', ay);
+            it.l.setAttribute('x2', x);
+            it.l.setAttribute('y2', y);
+            it.d.setAttribute('cx', x);
+            it.d.setAttribute('cy', y);
+            it.l.style.opacity = it.d.style.opacity = op;
+          });
+        }
+
+        function fit() {
+          if (!host || !isMounted) return;
+          const w = host.clientWidth || container.clientWidth;
+          const h = host.clientHeight || container.clientHeight;
+          R.setSize(w, h);
+          cam.aspect = w / h;
+          cam.updateProjectionMatrix();
+        }
+
+        window.addEventListener('resize', fit);
+        fit();
+
+        let reqId;
+        function loop() {
+          if (!isMounted) return;
+          oc.update();
+          R.render(S, cam);
+          ann();
+          reqId = requestAnimationFrame(loop);
+        }
+        loop();
+
+        return () => {
+          isMounted = false;
+          cancelAnimationFrame(reqId);
+          window.removeEventListener('resize', fit);
+          if (ac && ac.close) {
+            try { ac.close(); } catch (e) {}
+          }
+          if (R.domElement && R.domElement.parentNode) {
+            R.domElement.parentNode.removeChild(R.domElement);
+          }
+          R.dispose();
+        };
+      }, [isOpen]);
+
+      if (!isOpen) return null;
+
+      return html`
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-5">
+          <div className="relative w-full h-full max-w-6xl max-h-[92vh] bg-navy border border-white/20 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+            <!-- Header Modal -->
+            <div className="relative z-20 flex items-center justify-between px-5 py-4 bg-navy/90 border-b border-white/10 backdrop-blur">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-lg bg-cyan-400 flex items-center justify-center text-navy font-bold">
+                  <${Icon} n="plug" size=${20}/>
+                </span>
+                <div>
+                  <h3 className="text-white font-extrabold text-base sm:text-lg">EDU-BOARD <span className="text-cyan-400">Konektor Fool-Proof</span></h3>
+                  <p className="text-xs text-slate-400">Simulasi 3D Soket JST-XH 4-Pin & Proteksi Anti-Reverse Polarity</p>
+                </div>
+              </div>
+              <button onClick=${onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Tutup">
+                <${Icon} n="close" size=${22}/>
+              </button>
+            </div>
+
+            <!-- Viewport 3D Canvas Container -->
+            <div ref=${mountRef} className="relative flex-1 w-full h-full overflow-hidden select-none bg-gradient-to-b from-[#13284d] via-[#0a1428] to-[#060d1b]">
+              <div id="conn-c" className="absolute inset-0"></div>
+              
+              <!-- SVG Annotations overlay -->
+              <svg id="ov" className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                <line id="conn-l0" stroke="#fbbf24" strokeWidth="1.5" strokeDasharray="4 3"/>
+                <circle id="conn-d0" r="5" fill="#fbbf24"/>
+                <line id="conn-l1" stroke="#fbbf24" strokeWidth="1.5" strokeDasharray="4 3"/>
+                <circle id="conn-d1" r="5" fill="#fbbf24"/>
+              </svg>
+
+              <!-- Subtitle hint -->
+              <div className="absolute top-3 left-3 pointer-events-none z-20 max-w-[55%] sm:max-w-none">
+                <p className="text-[10px] sm:text-xs text-slate-400">💡 Seret mouse/sentuh untuk putar 360° · Scroll untuk zoom</p>
+              </div>
+
+              <!-- Anotasi Card Buttons -->
+              <div className="absolute right-3 top-3 sm:top-5 w-48 sm:w-64 flex flex-col gap-2 z-20">
+                <button id="conn-n0" className="text-left rounded-xl border border-amber-400/50 bg-[#0c1830]/85 backdrop-blur px-3 py-2 transition hover:bg-[#13284d]">
+                  <span className="block text-[11px] sm:text-xs font-semibold text-amber-300">① Rel Pengunci Asimetris</span>
+                  <span className="det mt-1 block text-[10px] sm:text-[11px] leading-snug text-slate-300">Tonjolan di soket digeser dari tengah. Hanya satu orientasi steker yang pas.</span>
+                </button>
+                <button id="conn-n1" className="text-left rounded-xl border border-amber-400/50 bg-[#0c1830]/85 backdrop-blur px-3 py-2 transition hover:bg-[#13284d]">
+                  <span className="block text-[11px] sm:text-xs font-semibold text-amber-300">② Alur Steker (Key Groove)</span>
+                  <span className="det hidden mt-1 text-[10px] sm:text-[11px] leading-snug text-slate-300">Jika steker dibalik 180°, alur tidak cocok dan membentur tonjolan soket.</span>
+                </button>
+              </div>
+
+              <!-- Control & Status Overlay di Bawah -->
+              <div className="absolute left-0 right-0 bottom-3 px-3 flex flex-col items-center gap-2 pointer-events-none z-20">
+                <div id="conn-st" aria-live="polite" className="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold opacity-0 border-transparent transition-opacity duration-300 pointer-events-auto"></div>
+                <div className="flex flex-wrap justify-center gap-2 pointer-events-auto">
+                  <button id="conn-bOk" className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-3.5 py-2.5 shadow-lg shadow-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition">✔ Tancapkan (Posisi Benar)</button>
+                  <button id="conn-bBad" className="rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 shadow-lg shadow-rose-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition">✖ Tancapkan (Terbalik 180°)</button>
+                  <button id="conn-bRs" className="rounded-xl border border-slate-500 bg-navy/60 backdrop-blur hover:bg-white/10 text-slate-200 font-bold text-xs sm:text-sm px-3.5 py-2.5 disabled:opacity-40 disabled:cursor-not-allowed transition">↺ Reset Posisi</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function Features({ onOpenModal, onOpenConnectorModal }) {
       const items = [
         { n: 'plug', t: 'Konektor Anti-Salah Sambung', d: 'Soket JST asimetris yang secara fisik tidak bisa dicolok terbalik. Anti-reverse polarity sejak colokan pertama.' },
         { n: 'shield', t: 'Modul Self-Diagnose', d: 'Pelindung berbasis PTC Resettable Fuse dengan tombol Pre-Flight Check. LED hijau berarti aman, LED merah berarti arus diblokir.' },
@@ -953,10 +1361,22 @@
   <div className="max-w-6xl mx-auto">
    <div className="text-center max-w-2xl mx-auto"><h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Tiga Lapis Perlindungan</h2><p className="mt-3 text-slate-600">Dirancang untuk pemula yang sayang uang, bukan takut belajar.</p></div>
    <div className="mt-12 grid md:grid-cols-3 gap-6">
-    ${items.map(x => html`<div key=${x.n} className="group bg-white rounded-2xl p-7 border border-slate-200 hover:border-safe hover:shadow-xl hover:-translate-y-1 transition">
-     <div className="w-14 h-14 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center group-hover:bg-safe group-hover:text-navy transition"><${Icon} n=${x.n} size=${28}/></div>
-     <h3 className="mt-5 text-xl font-bold text-navy">${x.t}</h3>
-     <p className="mt-2 text-slate-600 leading-relaxed">${x.d}</p>
+    ${items.map((x, i) => html`<div key=${x.n} className="group bg-white rounded-2xl p-7 border border-slate-200 hover:border-safe hover:shadow-xl hover:-translate-y-1 transition flex flex-col justify-between">
+     <div>
+       <div className="w-14 h-14 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center group-hover:bg-safe group-hover:text-navy transition"><${Icon} n=${x.n} size=${28}/></div>
+       <h3 className="mt-5 text-xl font-bold text-navy">${x.t}</h3>
+       <p className="mt-2 text-slate-600 leading-relaxed">${x.d}</p>
+     </div>
+     ${i === 0 && onOpenConnectorModal ? html`
+       <button onClick=${onOpenConnectorModal} className="mt-5 inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-cyan-50 text-cyan-800 hover:bg-cyan-500 hover:text-navy font-bold text-xs transition border border-cyan-200 shadow-sm">
+         <${Icon} n="plug" size=${15}/> Coba Simulasi Konektor 3D
+       </button>
+     ` : null}
+     ${i === 1 && onOpenModal ? html`
+       <button onClick=${onOpenModal} className="mt-5 inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-safe-soft text-safe-dark hover:bg-safe hover:text-navy font-bold text-xs transition border border-safe/30 shadow-sm">
+         <${Icon} n="cube" size=${15}/> Coba Simulasi Pre-Flight 3D
+       </button>
+     ` : null}
     </div>`)}
    </div>
   </div>
@@ -1005,7 +1425,7 @@
  </div></section>`;
     }
 
-    function How({ onOpenModal }) {
+    function How({ onOpenModal, onOpenConnectorModal }) {
       const s = [
         { n: 'book', t: 'Rakit Sesuai Guidebook', d: 'Ikuti skematik di kiri dan visual 3D di kanan. Tidak perlu menebak.' },
         { n: 'plug', t: 'Sambungkan Konektor JST', d: 'Bentuk asimetris hanya mengizinkan satu arah. Salah colok jadi mustahil.' },
@@ -1018,7 +1438,10 @@
    <span className="absolute -top-4 left-6 w-9 h-9 rounded-full bg-navy text-white font-bold flex items-center justify-center ring-4 ring-[#F5F8FB]">${i + 1}</span>
    <div className="w-12 h-12 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center"><${Icon} n=${x.n} size=${24}/></div>
    <h3 className="mt-4 text-lg font-bold text-navy">${x.t}</h3><p className="mt-2 text-sm text-slate-600 leading-relaxed">${x.d}</p></div>`)}</div>
-  <div className="mt-10 text-center">
+  <div className="mt-10 flex flex-wrap justify-center gap-3">
+    <button onClick=${onOpenConnectorModal} className="inline-flex items-center gap-2 bg-navy hover:bg-navy-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg border border-cyan-400/30">
+      <${Icon} n="plug" size=${18} className="text-cyan-400"/> Coba Simulasi Konektor JST 3D
+    </button>
     <button onClick=${onOpenModal} className="inline-flex items-center gap-2 bg-navy hover:bg-navy-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg">
       <${Icon} n="cube" size=${18} className="text-safe"/> Coba Simulasi Pre-Flight Check 3D
     </button>
@@ -1087,16 +1510,27 @@
 
     function App() {
       const [modalOpen, setModalOpen] = useState(false);
+      const [connectorModalOpen, setConnectorModalOpen] = useState(false);
 
       return html`
         <main>
-          <${Hero} onOpenModal=${() => setModalOpen(true)}/>
-          <${Features}/>
+          <${Hero} 
+            onOpenModal=${() => setModalOpen(true)}
+            onOpenConnectorModal=${() => setConnectorModalOpen(true)}
+          />
+          <${Features}
+            onOpenModal=${() => setModalOpen(true)}
+            onOpenConnectorModal=${() => setConnectorModalOpen(true)}
+          />
           <${Gallery}/>
-          <${How} onOpenModal=${() => setModalOpen(true)}/>
+          <${How} 
+            onOpenModal=${() => setModalOpen(true)}
+            onOpenConnectorModal=${() => setConnectorModalOpen(true)}
+          />
           <${Guidebook}/>
           <${Pricing}/>
           <${SimulationModal} isOpen=${modalOpen} onClose=${() => setModalOpen(false)}/>
+          <${ConnectorModal} isOpen=${connectorModalOpen} onClose=${() => setConnectorModalOpen(false)}/>
           <footer className="bg-navy text-slate-400 text-sm text-center py-8 px-5">EDU-BOARD · Prototipe web landing page · Tim 9 Technopreneurship.</footer>
         </main>
       `;
