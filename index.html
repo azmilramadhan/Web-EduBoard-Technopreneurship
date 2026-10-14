@@ -409,9 +409,22 @@
       transition: transform 0.4s;
     }
 
-    #guidebook .eb3d-deck:hover .dfr {
-      transform: translateY(-12%) scale(1.1) !important;
-    }
+    /* LogiCards: kartu depan Konsep, Quiz, Misi */
+    #guidebook .eb3d-deck .eb3d-card, #guidebook .eb3d-deck-big .eb3d-card { position: absolute; left: 27%; top: 8%; width: 46%; aspect-ratio: 900 / 1197; container-type: inline-size; background: #12263f; border-radius: 6% / 4.5%; transform-origin: 50% 90%; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5)); transition: transform 0.4s, top 0.4s; overflow: hidden; }
+    #guidebook .eb3d-card .ci { position: absolute; inset: 4.2cqw; border-radius: 4cqw; background: #FBF8F0; border: 0.8cqw solid #1f8a96; padding: 5.5cqw 5cqw 4.5cqw; display: flex; flex-direction: column; color: #12263f; font-family: Inter, system-ui, sans-serif; overflow: hidden; }
+    #guidebook .eb3d-card .rb { position: absolute; top: 0; right: 6cqw; width: 14cqw; height: 17cqw; background: #1f8a96; color: #fff; font-weight: 800; font-size: 7cqw; text-align: center; padding-top: 3.2cqw; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%); }
+    #guidebook .eb3d-card .t { margin: 0; font-weight: 900; font-size: 12cqw; line-height: 1; letter-spacing: -0.02em; }
+    #guidebook .eb3d-card .s { margin: 1.5cqw 0 0; font-size: 4.6cqw; font-weight: 700; color: #1f8a96; }
+    #guidebook .eb3d-card .q { margin: 5cqw 0 0; font-size: 6.6cqw; font-weight: 800; line-height: 1.2; }
+    #guidebook .eb3d-card .lb { margin: 4.5cqw 0 0; font-size: 4.4cqw; font-weight: 800; color: #1f8a96; text-transform: uppercase; letter-spacing: 0.06em; }
+    #guidebook .eb3d-card .bh { margin: 1cqw 0 0; font-size: 5cqw; line-height: 1.25; }
+    #guidebook .eb3d-card ul, #guidebook .eb3d-card ol { list-style: none; margin: 3.5cqw 0 0; padding: 0; display: flex; flex-direction: column; gap: 2.6cqw; }
+    #guidebook .eb3d-card li { display: flex; gap: 2.6cqw; align-items: flex-start; font-size: 5cqw; line-height: 1.25; }
+    #guidebook .eb3d-card li b { flex: none; width: 7cqw; height: 7cqw; border-radius: 50%; background: #12263f; color: #fff; font-size: 4.2cqw; display: flex; align-items: center; justify-content: center; }
+    #guidebook .eb3d-card .n { margin-top: auto; background: #D9E8E6; border-radius: 3cqw; padding: 3cqw 3.5cqw; font-size: 4.6cqw; line-height: 1.25; }
+    #guidebook .eb3d-deck:hover .eb3d-front { top: 2%; }
+    #guidebook .eb3d-deck { --dx: 34%; --rot: 13deg; }
+
 
     /* Viewer Modal & Smoke */
     #guidebook .eb3d-smoke {
@@ -489,6 +502,9 @@
       filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.6));
       transition: transform 0.4s;
     }
+
+    #guidebook .eb3d-deck-big { --dx: 108%; --rot: 4deg; width: min(94vw, 880px); aspect-ratio: 2.05; }
+    #guidebook .eb3d-deck-big img, #guidebook .eb3d-deck-big .eb3d-card { left: 34.5%; width: 31%; top: 6%; }
 
     @keyframes eb3d-zin {
       from {
@@ -844,6 +860,8 @@
         width: min(85vw, 240px);
         min-width: unset;
       }
+      #guidebook .eb3d-deck-big { --dx: 78%; --rot: 3deg; aspect-ratio: 1.3; }
+      #guidebook .eb3d-deck-big img, #guidebook .eb3d-deck-big .eb3d-card { left: 32%; width: 36%; top: 8%; }
       #guidebook .eb3d-qlab { font-size: 8px; padding: 3px 8px; }
 
 
@@ -2097,6 +2115,29 @@
       lb: EB3D_IMGS.lb,
       boxFace: EB3D_IMGS.box
     };
+    /* Susunan LogiCards: 5 kartu belakang + 3 kartu depan (Konsep LED, Quiz, Misi) */
+    const LogiFronts = () => [0, 1, 2, 3, 4].map(i => html`<img key=${'b' + i} alt="Kartu Belakang" src=${EB3D_ASSETS.lb} style=${{ transform: `rotate(${(i - 2) * 10}deg) translateY(${Math.abs(i - 2) * 1.8}%)` }}/>`).concat([
+      html`<div key="quiz" className="eb3d-card eb3d-front" style=${{ transform: 'translate(calc(var(--dx) * -1), 1%) rotate(calc(var(--rot) * -1))' }}>
+        <div className="ci">
+          <span className="rb">02</span>
+          <h4 className="t">QUIZ</h4><p className="s">Uji pemahamanmu</p>
+          <p className="q">Apa yang terjadi jika LED dipasang tanpa resistor?</p>
+          <ul><li><b>A</b>Menyala redup</li><li><b>B</b>Menyala sangat terang lalu terbakar</li><li><b>C</b>Tidak terjadi apa-apa</li></ul>
+          <div className="n">Petunjuk: resistor membatasi arus.</div>
+        </div>
+      </div>`,
+      html`<div key="misi" className="eb3d-card eb3d-front" style=${{ transform: 'translate(var(--dx), 1%) rotate(var(--rot))' }}>
+        <div className="ci">
+          <span className="rb">03</span>
+          <h4 className="t">MISI</h4><p className="s">Level 02: Sirkuit LED & Resistor</p>
+          <p className="q">Nyalakan LED dengan aman</p>
+          <p className="lb">Bahan</p><p className="bh">LED, resistor 220Ω, kabel jumper, breadboard</p>
+          <ol><li><b>1</b>Pasang resistor seri dengan kaki Anode (+)</li><li><b>2</b>Sambungkan ke daya USB EDU-BOARD</li><li><b>3</b>Tekan Pre-Flight Check, LED hijau berarti aman</li></ol>
+        </div>
+      </div>`,
+      html`<img key="konsep" className="dfr eb3d-front" alt="Kartu Konsep: LED" src=${EB3D_ASSETS.lf} style=${{ transform: 'translateY(-4%) scale(1.06)' }}/>`
+    ]);
+
 
     function Guidebook() {
       const [mode, setMode] = useState('box'); // 'box' | 'items' | 'book' | 'bookopen' | 'video' | 'zroad' | 'zlogi'
@@ -2427,19 +2468,9 @@
                 <button className="eb3d-it" onClick=${() => setMode('zlogi')} title="Buka LogiCards">
                   <div className="eb3d-in">
                     <div className="eb3d-deck">
-                      ${[0, 1, 2, 3, 4, 5, 6, 7].map(i => html`
-                        <img 
-                          key=${i}
-                          alt="Kartu Belakang" 
-                          src=${EB3D_ASSETS.lb} 
-                          style=${{
-          transform: `rotate(${(i - 3.5) * 8}deg) translateY(${Math.abs(i - 3.5) * 1.5}%)`
-        }}
-                        />
-                      `)}
-                      <img className="dfr" alt="Kartu Depan" src=${EB3D_ASSETS.lf} style=${{ transform: 'translateY(-4%) scale(1.06)' }}/>
+                      ${LogiFronts()}
                     </div>
-                    <span className="font-bold text-sm tracking-wide text-white drop-shadow">LogiCards</span>
+                    <span className="font-bold text-sm tracking-wide text-white drop-shadow">LogiCards: Konsep, Quiz & Misi</span>
                   </div>
                 </button>
               </div>
@@ -2461,17 +2492,7 @@
                   style=${{ display: mode === 'zlogi' ? 'block' : 'none' }}
                   onClick=${stepBack}
                 >
-                  ${[0, 1, 2, 3, 4, 5, 6, 7].map(i => html`
-                    <img 
-                      key=${i}
-                      alt="Kartu Belakang" 
-                      src=${EB3D_ASSETS.lb} 
-                      style=${{
-            transform: `rotate(${(i - 3.5) * 8}deg) translateY(${Math.abs(i - 3.5) * 1.5}%)`
-          }}
-                    />
-                  `)}
-                  <img className="dfr" alt="Kartu Depan" src=${EB3D_ASSETS.lf} style=${{ transform: 'translateY(-4%) scale(1.06)' }}/>
+                  ${LogiFronts()}
                 </div>
 
                 <!-- 3D Book Container -->
