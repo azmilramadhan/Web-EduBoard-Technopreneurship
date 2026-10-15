@@ -931,7 +931,7 @@
     };
     const Slot = ({ k, label, hint }) => IMAGES[k]
       ? html`<img src=${IMAGES[k]} alt=${label} className="w-full h-full object-cover rounded-2xl"/>`
-      : html`<div className="w-full h-full rounded-2xl border-2 border-dashed border-safe/50 bg-gradient-to-br from-safe-soft to-white flex flex-col items-center justify-center text-center p-4"><div className="w-12 h-12 rounded-xl bg-safe/20 text-safe-dark flex items-center justify-center"><${Icon} n="image" size=${24}/></div><div className="mt-3 font-semibold text-navy text-sm">${label}</div><div className="text-xs text-slate-500 mt-1">${hint}</div></div>`;
+      : html`<div className="w-full h-full rounded-2xl border-2 border-dashed border-safe/50 bg-gradient-to-br from-safe-soft to-white flex flex-col items-center justify-center text-center p-4"><div className="mt-3 font-semibold text-navy text-sm">${label}</div><div className="text-xs text-slate-500 mt-1">${hint}</div></div>`;
 
     /* Ikon: path Lucide (inline, tanpa dependensi) */
     const P = {
@@ -952,10 +952,10 @@
 
     function Nav({ onOpenModal, onOpenConnectorModal }) {
       return html`<header className="absolute top-0 inset-x-0 z-10"><div className="max-w-6xl mx-auto px-5 py-5 flex items-center justify-between">
-  <div className="flex items-center gap-2 text-white font-extrabold text-lg"><span className="w-8 h-8 rounded-lg bg-safe flex items-center justify-center text-navy"><${Icon} n="zap" size=${18}/></span>EDU-BOARD</div>
+  <div className="flex items-center gap-2 text-white font-extrabold text-lg">EDU-BOARD</div>
   <nav className="hidden sm:flex items-center gap-5 text-sm text-slate-300">
-    <button onClick=${onOpenModal} className="text-safe font-semibold hover:text-white flex items-center gap-1.5 transition" title="Simulasi 3D Self-Diagnose"><${Icon} n="cube" size=${16}/>Demo Self-Diagnose</button>
-    <button onClick=${onOpenConnectorModal} className="text-cyan-400 font-semibold hover:text-white flex items-center gap-1.5 transition" title="Simulasi 3D Konektor Fool-Proof"><${Icon} n="plug" size=${16}/>Demo Konektor</button>
+    <button onClick=${onOpenModal} className="text-safe font-semibold hover:text-white flex items-center gap-1.5 transition" title="Simulasi 3D Self-Diagnose">Demo Self-Diagnose</button>
+    <button onClick=${onOpenConnectorModal} className="text-cyan-400 font-semibold hover:text-white flex items-center gap-1.5 transition" title="Simulasi 3D Konektor Fool-Proof">Demo Konektor</button>
     <a href="#fitur" className="hover:text-white transition">Keunggulan</a>
     <a href="#cara" className="hover:text-white transition">Cara Kerja</a>
     <a href="#guidebook" className="hover:text-white transition">Guidebook</a>
@@ -1053,17 +1053,17 @@
       const sideContent = html`
         <div className="box-side">
           <div>
-            <${Icon} n="shield" size=${20} className="text-navy"/>
+            
             <b>SELF-DIAGNOSE</b>
             <em>Aman dari Korslet</em>
           </div>
           <div>
-            <${Icon} n="plug" size=${20} className="text-navy"/>
+            
             <b>FOOL-PROOF</b>
             <em>Anti Terbalik</em>
           </div>
           <div>
-            <${Icon} n="book" size=${20} className="text-navy"/>
+            
             <b>HYBRID GUIDEBOOK</b>
             <em>Cepat & Mandiri</em>
           </div>
@@ -1197,10 +1197,10 @@
             
             <div className="flex items-center gap-1.5">
               <button onClick=${onOpenConnectorModal} className="text-xs bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition">
-                <${Icon} n="plug" size=${13}/> Tes Konektor
+                 Tes Konektor
               </button>
               <button onClick=${onOpenModal} className="text-xs bg-safe hover:bg-safe-dark text-navy font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-lg shadow-safe/20">
-                <${Icon} n="zap" size=${14}/> Tes Pre-Flight
+                 Tes Pre-Flight
               </button>
             </div>
           </div>
@@ -1222,11 +1222,11 @@
     <div className="mt-8 flex flex-wrap items-center gap-3">
      <a href="#harga" className="bg-safe hover:bg-safe-dark text-navy font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-safe/30 transition">Pre-Order Sekarang Rp 149.000</a>
      <button onClick=${onOpenModal} className="inline-flex items-center gap-2 border border-safe/60 bg-safe/10 hover:bg-safe hover:text-navy text-safe px-5 py-3.5 rounded-xl font-bold transition shadow-lg shadow-safe/10">
-       <${Icon} n="cube" size=${19}/>
+       
        Demo Self-Diagnose
      </button>
      <button onClick=${onOpenConnectorModal} className="inline-flex items-center gap-2 border border-cyan-400/60 bg-cyan-500/10 hover:bg-cyan-400 hover:text-navy text-cyan-300 px-5 py-3.5 rounded-xl font-bold transition shadow-lg shadow-cyan-500/10">
-       <${Icon} n="plug" size=${19}/>
+       
        Demo Konektor Fool-Proof
      </button>
     </div>
@@ -1582,16 +1582,13 @@
             <!-- Header Modal -->
             <div className="relative z-20 flex items-center justify-between px-5 py-4 bg-navy/90 border-b border-white/10 backdrop-blur">
               <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-safe flex items-center justify-center text-navy font-bold">
-                  <${Icon} n="cube" size=${20}/>
-                </span>
                 <div>
                   <h3 className="text-white font-extrabold text-base sm:text-lg">EDU-BOARD <span className="text-safe">Simulasi 3D</span></h3>
                   <p className="text-xs text-slate-400">Modul Self-Diagnose & Pre-Flight Check Interaktif</p>
                 </div>
               </div>
-              <button onClick=${onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Tutup">
-                <${Icon} n="close" size=${22}/>
+              <button onClick=${onClose} className="px-3 py-1.5 text-sm font-semibold rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Tutup">
+                Tutup
               </button>
             </div>
 
@@ -1980,16 +1977,13 @@
             <!-- Header Modal -->
             <div className="relative z-20 flex items-center justify-between px-5 py-4 bg-navy/90 border-b border-white/10 backdrop-blur">
               <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-lg bg-cyan-400 flex items-center justify-center text-navy font-bold">
-                  <${Icon} n="plug" size=${20}/>
-                </span>
                 <div>
                   <h3 className="text-white font-extrabold text-base sm:text-lg">EDU-BOARD <span className="text-cyan-400">Konektor Fool-Proof</span></h3>
                   <p className="text-xs text-slate-400">Simulasi 3D Soket JST-XH 4-Pin & Proteksi Anti-Reverse Polarity</p>
                 </div>
               </div>
-              <button onClick=${onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Tutup">
-                <${Icon} n="close" size=${22}/>
+              <button onClick=${onClose} className="px-3 py-1.5 text-sm font-semibold rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Tutup">
+                Tutup
               </button>
             </div>
 
@@ -2007,17 +2001,17 @@
 
               <!-- Subtitle hint -->
               <div className="absolute top-3 left-3 pointer-events-none z-20 max-w-[55%] sm:max-w-none">
-                <p className="text-[10px] sm:text-xs text-slate-400">💡 Seret mouse/sentuh untuk putar 360° · Scroll untuk zoom</p>
+                <p className="text-[10px] sm:text-xs text-slate-400">Seret mouse/sentuh untuk putar 360° · Scroll untuk zoom</p>
               </div>
 
               <!-- Anotasi Card Buttons -->
               <div className="absolute right-3 top-3 sm:top-5 w-48 sm:w-64 flex flex-col gap-2 z-20">
                 <button id="conn-n0" className="text-left rounded-xl border border-amber-400/50 bg-[#0c1830]/85 backdrop-blur px-3 py-2 transition hover:bg-[#13284d]">
-                  <span className="block text-[11px] sm:text-xs font-semibold text-amber-300">① Rel Pengunci Asimetris</span>
+                  <span className="block text-[11px] sm:text-xs font-semibold text-amber-300">Rel Pengunci Asimetris</span>
                   <span className="det mt-1 block text-[10px] sm:text-[11px] leading-snug text-slate-300">Tonjolan di soket digeser dari tengah. Hanya satu orientasi steker yang pas.</span>
                 </button>
                 <button id="conn-n1" className="text-left rounded-xl border border-amber-400/50 bg-[#0c1830]/85 backdrop-blur px-3 py-2 transition hover:bg-[#13284d]">
-                  <span className="block text-[11px] sm:text-xs font-semibold text-amber-300">② Alur Steker (Key Groove)</span>
+                  <span className="block text-[11px] sm:text-xs font-semibold text-amber-300">Alur Steker (Key Groove)</span>
                   <span className="det hidden mt-1 text-[10px] sm:text-[11px] leading-snug text-slate-300">Jika steker dibalik 180°, alur tidak cocok dan membentur tonjolan soket.</span>
                 </button>
               </div>
@@ -2026,9 +2020,9 @@
               <div className="absolute left-0 right-0 bottom-3 px-3 flex flex-col items-center gap-2 pointer-events-none z-20">
                 <div id="conn-st" aria-live="polite" className="px-4 py-2 rounded-xl border text-xs sm:text-sm font-bold opacity-0 border-transparent transition-opacity duration-300 pointer-events-auto"></div>
                 <div className="flex flex-wrap justify-center gap-2 pointer-events-auto">
-                  <button id="conn-bOk" className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-3.5 py-2.5 shadow-lg shadow-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition">✔ Tancapkan (Posisi Benar)</button>
-                  <button id="conn-bBad" className="rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 shadow-lg shadow-rose-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition">✖ Tancapkan (Terbalik 180°)</button>
-                  <button id="conn-bRs" className="rounded-xl border border-slate-500 bg-navy/60 backdrop-blur hover:bg-white/10 text-slate-200 font-bold text-xs sm:text-sm px-3.5 py-2.5 disabled:opacity-40 disabled:cursor-not-allowed transition">↺ Reset Posisi</button>
+                  <button id="conn-bOk" className="rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-3.5 py-2.5 shadow-lg shadow-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition">Tancapkan (Posisi Benar)</button>
+                  <button id="conn-bBad" className="rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 shadow-lg shadow-rose-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition">Tancapkan (Terbalik 180°)</button>
+                  <button id="conn-bRs" className="rounded-xl border border-slate-500 bg-navy/60 backdrop-blur hover:bg-white/10 text-slate-200 font-bold text-xs sm:text-sm px-3.5 py-2.5 disabled:opacity-40 disabled:cursor-not-allowed transition">Reset Posisi</button>
                 </div>
               </div>
 
@@ -2050,23 +2044,22 @@
    <div className="mt-12 grid md:grid-cols-3 gap-6">
     ${items.map((x, i) => html`<div key=${x.n} className="group bg-white rounded-2xl p-7 border border-slate-200 hover:border-safe hover:shadow-xl hover:-translate-y-1 transition flex flex-col justify-between">
      <div>
-       <div className="w-14 h-14 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center group-hover:bg-safe group-hover:text-navy transition"><${Icon} n=${x.n} size=${28}/></div>
-       <h3 className="mt-5 text-xl font-bold text-navy">${x.t}</h3>
+       <h3 className="text-xl font-bold text-navy">${x.t}</h3>
        <p className="mt-2 text-slate-600 leading-relaxed">${x.d}</p>
      </div>
      ${i === 0 && onOpenConnectorModal ? html`
        <button onClick=${onOpenConnectorModal} className="mt-5 inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-cyan-50 text-cyan-800 hover:bg-cyan-500 hover:text-navy font-bold text-xs transition border border-cyan-200 shadow-sm">
-         <${Icon} n="plug" size=${15}/> Coba Simulasi Konektor 3D
+          Coba Simulasi Konektor 3D
        </button>
      ` : null}
      ${i === 1 && onOpenModal ? html`
        <button onClick=${onOpenModal} className="mt-5 inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-safe-soft text-safe-dark hover:bg-safe hover:text-navy font-bold text-xs transition border border-safe/30 shadow-sm">
-         <${Icon} n="cube" size=${15}/> Coba Simulasi Pre-Flight 3D
+          Coba Simulasi Pre-Flight 3D
        </button>
      ` : null}
      ${i === 2 ? html`
        <a href="#guidebook" className="mt-5 inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-navy/5 text-navy hover:bg-navy hover:text-white font-bold text-xs transition border border-navy/20 shadow-sm">
-         <${Icon} n="cube" size=${15}/> Jelajahi Guidebook di Eksplorasi 3D
+          Jelajahi Guidebook di Eksplorasi 3D
        </a>
      ` : null}
     </div>`)}
@@ -2093,7 +2086,7 @@
      <div className="text-sm text-slate-500">Kit Elektronika Konvensional</div>
      <div className="text-xl font-semibold text-slate-400 line-through decoration-red-500 decoration-2">Rp 500.000+</div>
      <div className="mt-1 flex items-end gap-2"><span className="text-5xl font-extrabold text-navy">Rp 149.000</span></div>
-     <ul className="mt-6 space-y-3">${items.map(i => html`<li key=${i} className="flex gap-3 text-slate-700 text-sm"><span className="mt-0.5 w-5 h-5 shrink-0 rounded-full bg-safe-soft text-safe-dark flex items-center justify-center"><${Icon} n="check" size=${13}/></span>${i}</li>`)}</ul>
+     <ul className="mt-6 space-y-3">${items.map(i => html`<li key=${i} className="flex gap-3 text-slate-700 text-sm">${i}</li>`)}</ul>
      ${!open ? html`<button onClick=${() => setOpen(true)} className="mt-8 w-full bg-safe hover:bg-safe-dark text-navy font-bold py-3.5 rounded-xl shadow-lg shadow-safe/30 transition">Pre-Order Sekarang</button>` : null}
      ${open && !done ? html`<div className="mt-8 space-y-3">
       <input className=${inp} placeholder="Nama lengkap" value=${f.nama} onChange=${e => setF({ ...f, nama: e.target.value })}/>
@@ -2128,14 +2121,13 @@
   <div className="text-center max-w-2xl mx-auto"><h2 className="text-3xl sm:text-4xl font-extrabold text-navy">Cara Kerja: 4 Langkah Aman</h2><p className="mt-3 text-slate-600">Dari kotak sampai LED menyala, tanpa rasa was-was.</p></div>
   <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">${s.map((x, i) => html`<div key=${i} className="relative bg-white rounded-2xl p-6 pt-8 border border-slate-200 hover:border-safe hover:shadow-lg transition">
    <span className="absolute -top-4 left-6 w-9 h-9 rounded-full bg-navy text-white font-bold flex items-center justify-center ring-4 ring-[#F5F8FB]">${i + 1}</span>
-   <div className="w-12 h-12 rounded-xl bg-safe-soft text-safe-dark flex items-center justify-center"><${Icon} n=${x.n} size=${24}/></div>
-   <h3 className="mt-4 text-lg font-bold text-navy">${x.t}</h3><p className="mt-2 text-sm text-slate-600 leading-relaxed">${x.d}</p></div>`)}</div>
+   <h3 className="text-lg font-bold text-navy">${x.t}</h3><p className="mt-2 text-sm text-slate-600 leading-relaxed">${x.d}</p></div>`)}</div>
   <div className="mt-10 flex flex-wrap justify-center gap-3">
     <button onClick=${onOpenConnectorModal} className="inline-flex items-center gap-2 bg-navy hover:bg-navy-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg border border-cyan-400/30">
-      <${Icon} n="plug" size=${18} className="text-cyan-400"/> Coba Simulasi Konektor JST 3D
+       Coba Simulasi Konektor JST 3D
     </button>
     <button onClick=${onOpenModal} className="inline-flex items-center gap-2 bg-navy hover:bg-navy-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg">
-      <${Icon} n="cube" size=${18} className="text-safe"/> Coba Simulasi Pre-Flight Check 3D
+       Coba Simulasi Pre-Flight Check 3D
     </button>
   </div>
  </div></section>`;
@@ -2355,7 +2347,7 @@
             <!-- Header Section -->
             <div className="text-center max-w-2xl mx-auto mb-10">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-safe/10 border border-safe/30 text-safe text-xs font-semibold uppercase tracking-wider mb-3">
-                <${Icon} n="book" size=${14}/>
+                
                 <span>3D Hybrid Guidebook & Unboxing</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -2409,7 +2401,7 @@
                 onClick=${stepBack}
                 title="Kembali"
               >
-                ← Kembali
+                Kembali
               </button>
 
               <!-- Stage with 3D World & Box -->
@@ -2438,17 +2430,17 @@
                     <div className="eb3d-f eb3d-rt">
                       <div className="box-side">
                         <div>
-                          <${Icon} n="shield" size=${20} className="text-navy"/>
+                          
                           <b>SELF-DIAGNOSE</b>
                           <em>Aman dari Korslet</em>
                         </div>
                         <div>
-                          <${Icon} n="plug" size=${20} className="text-navy"/>
+                          
                           <b>FOOL-PROOF</b>
                           <em>Colokan Anti Terbalik</em>
                         </div>
                         <div>
-                          <${Icon} n="book" size=${20} className="text-navy"/>
+                          
                           <b>HYBRID GUIDEBOOK</b>
                           <em>Cepat & Mandiri</em>
                         </div>
@@ -2628,7 +2620,7 @@
                     className="eb3d-drv"
                   >
                     <span>Buka di Google Drive</span>
-                    <${Icon} n="scan" size=${15}/>
+                    
                   </a>
                 </div>
               </div>
